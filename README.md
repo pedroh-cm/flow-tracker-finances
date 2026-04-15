@@ -16,6 +16,51 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
+## Unit Tests (Jest)
+
+Run unit tests with:
+
+```bash
+npm run test
+```
+
+Watch mode:
+
+```bash
+npm run test:watch
+```
+
+Coverage report:
+
+```bash
+npm run test:coverage
+```
+
+## Estado global com Zustand
+
+O projeto usa `zustand` com stores em `src/viewmodels/stores`.
+
+Store base criada: `src/viewmodels/stores/use-ui-store.ts`
+
+Exemplo de uso em componente client:
+
+```tsx
+"use client";
+
+import { useUiStore } from "@/src/viewmodels/stores/use-ui-store";
+
+export function SidebarToggleButton() {
+	const isSidebarOpen = useUiStore((state) => state.isSidebarOpen);
+	const toggleSidebar = useUiStore((state) => state.toggleSidebar);
+
+	return (
+		<button type="button" onClick={toggleSidebar}>
+			{isSidebarOpen ? "Fechar menu" : "Abrir menu"}
+		</button>
+	);
+}
+```
+
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
