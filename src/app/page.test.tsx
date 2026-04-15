@@ -5,8 +5,8 @@ import Home from "./page";
 
 jest.mock("next/image", () => ({
   __esModule: true,
-  default: (props: React.ComponentProps<'img'>) => {
-    return <img {...props} alt={props.alt ?? ""} />;
+  default: (props: { alt?: string }) => {
+    return <span aria-label={props.alt ?? "image"} data-testid="next-image" />;
   },
 }));
 

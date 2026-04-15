@@ -1,47 +1,90 @@
 "use client";
 
-import { createContext, ReactNode, useContext, useMemo, useState } from "react";
+import { ReactNode, useEffect } from "react";
+import { create } from "zustand";
+import { createJSONStorage, persist } from "zustand/middleware";
 
 import { ThemeMode } from "@/src/models/entities/theme-mode";
-import { LocalThemeRepository } from "@/src/models/services/local-theme-repository";
-import { ToggleThemeUseCase } from "@/src/viewmodels/use-cases/toggle-theme-use-case";
 
-type ThemeStoreContextValue = {
+type ThemeStoreState = {
   theme: ThemeMode;
+  hasHydrated: boolean;
   toggleTheme: () => void;
+  setTheme: (theme: ThemeMode) => void;
+  setHasHydrated: (hasHydrated: boolean) => void;
 };
 
-const ThemeStoreContext = createContext<ThemeStoreContextValue | null>(null);
+const applyThemeToDocument = (theme: ThemeMode) => {
+  if (typeof document === "undefined") {
+    return;
+  }
 
-const themeRepository = new LocalThemeRepository();
-const toggleThemeUseCase = new ToggleThemeUseCase(themeRepository);
+  const root = document.documentElement;
+  root.classList.remove("light", "dark");
+  root.classList.add(theme);
+};
+
+const getInitialTheme = (): ThemeMode => {
+  if (typeof window === "undefined") {
+    return "light";
+  }
+
+  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+};
+
+const useThemeBaseStore = create<ThemeStoreState>()(
+  persist(
+    (set, get) => ({
+      theme: getInitialTheme(),
+      hasHydrated: false,
+      setTheme: (theme) => {
+        applyThemeToDocument(theme);
+        set({ theme });
+      },
+      toggleTheme: () => {
+        const nextTheme: ThemeMode = get().theme === "dark" ? "light" : "dark";
+        applyThemeToDocument(nextTheme);
+        set({ theme: nextTheme });
+      },
+      setHasHydrated: (hasHydrated) => {
+        set({ hasHydrated });
+      },
+    }),
+    {
+      name: "flowtrack-theme",
+      storage: createJSONStorage(() => localStorage),
+      partialize: (state) => ({ theme: state.theme }),
+      onRehydrateStorage: () => (state) => {
+        state?.setHasHydrated(true);
+      },
+    },
+  ),
+);
 
 type ThemeStoreProviderProps = {
   children: ReactNode;
 };
 
 export function ThemeStoreProvider({ children }: ThemeStoreProviderProps) {
-  const [theme, setTheme] = useState<ThemeMode>(() => themeRepository.getTheme());
+  const theme = useThemeBaseStore((state) => state.theme);
 
-  const contextValue = useMemo(
-    () => ({
-      theme,
-      toggleTheme: () => {
-        const nextTheme = toggleThemeUseCase.execute(theme);
-        setTheme(nextTheme);
-      },
-    }),
-    [theme],
-  );
+  useEffect(() => {
+    applyThemeToDocument(theme);
+  }, [theme]);
 
-  return <ThemeStoreContext.Provider value={contextValue}>{children}</ThemeStoreContext.Provider>;
+  return <>{children}</>;
 }
 
 export function useThemeStore() {
-  const context = useContext(ThemeStoreContext);
-  if (!context) {
-    throw new Error("useThemeStore must be used within ThemeStoreProvider");
-  }
+  const theme = useThemeBaseStore((state) => state.theme);
+  const hasHydrated = useThemeBaseStore((state) => state.hasHydrated);
+  const setTheme = useThemeBaseStore((state) => state.setTheme);
+  const toggleTheme = useThemeBaseStore((state) => state.toggleTheme);
 
-  return context;
+  return {
+    theme,
+    hasHydrated,
+    setTheme,
+    toggleTheme,
+  };
 }

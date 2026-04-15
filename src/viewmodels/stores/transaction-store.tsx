@@ -1,55 +1,84 @@
 "use client";
 
-import { createContext, ReactNode, useContext, useMemo, useState } from "react";
+import { ReactNode, useMemo } from "react";
+import { create } from "zustand";
+import { createJSONStorage, persist } from "zustand/middleware";
 
-import { Transaction } from "@/src/models/entities/transaction";
-import { MemoryTransactionRepository } from "@/src/models/services/memory-transaction-repository";
+import { initialTransactions, Transaction } from "@/src/models/entities/transaction";
 
-type TransactionStoreContextValue = {
+type TransactionStoreState = {
   transactions: Transaction[];
-  balance: number;
   addTransaction: (transaction: Omit<Transaction, "id">) => void;
   updateTransaction: (id: string, transaction: Omit<Transaction, "id">) => void;
   deleteTransaction: (id: string) => void;
 };
 
-const TransactionStoreContext = createContext<TransactionStoreContextValue | null>(null);
-const transactionRepository = new MemoryTransactionRepository();
+const createTransactionId = () => {
+  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+    return crypto.randomUUID();
+  }
+
+  return `tx-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+};
+
+const useTransactionBaseStore = create<TransactionStoreState>()(
+  persist(
+    (set) => ({
+      transactions: initialTransactions,
+      addTransaction: (transaction) => {
+        const nextTransaction: Transaction = {
+          ...transaction,
+          id: createTransactionId(),
+        };
+
+        set((state) => ({
+          transactions: [nextTransaction, ...state.transactions],
+        }));
+      },
+      updateTransaction: (id, transaction) => {
+        set((state) => ({
+          transactions: state.transactions.map((currentTransaction) =>
+            currentTransaction.id === id ? { ...transaction, id } : currentTransaction,
+          ),
+        }));
+      },
+      deleteTransaction: (id) => {
+        set((state) => ({
+          transactions: state.transactions.filter((currentTransaction) => currentTransaction.id !== id),
+        }));
+      },
+    }),
+    {
+      name: "flowtrack-transactions",
+      storage: createJSONStorage(() => localStorage),
+      partialize: (state) => ({
+        transactions: state.transactions,
+      }),
+    },
+  ),
+);
 
 type TransactionStoreProviderProps = {
   children: ReactNode;
 };
 
 export function TransactionStoreProvider({ children }: TransactionStoreProviderProps) {
-  const [transactions, setTransactions] = useState<Transaction[]>(() => transactionRepository.list());
-
-  const contextValue = useMemo(() => {
-    const balance = transactions.reduce((sum, transaction) => sum + transaction.amount, 0);
-
-    return {
-      transactions,
-      balance,
-      addTransaction: (transaction: Omit<Transaction, "id">) => {
-        transactionRepository.create(transaction);
-        setTransactions(transactionRepository.list());
-      },
-      updateTransaction: (id: string, transaction: Omit<Transaction, "id">) => {
-        setTransactions(transactionRepository.update(id, transaction));
-      },
-      deleteTransaction: (id: string) => {
-        setTransactions(transactionRepository.delete(id));
-      },
-    };
-  }, [transactions]);
-
-  return <TransactionStoreContext.Provider value={contextValue}>{children}</TransactionStoreContext.Provider>;
+  return <>{children}</>;
 }
 
 export function useTransactionStore() {
-  const context = useContext(TransactionStoreContext);
-  if (!context) {
-    throw new Error("useTransactionStore must be used within TransactionStoreProvider");
-  }
+  const transactions = useTransactionBaseStore((state) => state.transactions);
+  const addTransaction = useTransactionBaseStore((state) => state.addTransaction);
+  const updateTransaction = useTransactionBaseStore((state) => state.updateTransaction);
+  const deleteTransaction = useTransactionBaseStore((state) => state.deleteTransaction);
 
-  return context;
+  const balance = useMemo(() => transactions.reduce((sum, transaction) => sum + transaction.amount, 0), [transactions]);
+
+  return {
+    transactions,
+    balance,
+    addTransaction,
+    updateTransaction,
+    deleteTransaction,
+  };
 }

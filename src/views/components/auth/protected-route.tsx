@@ -12,16 +12,20 @@ type ProtectedRouteProps = {
 export function ProtectedRoute({ children }: ProtectedRouteProps) {
   const router = useRouter();
   const pathname = usePathname();
-  const { isAuthenticated } = useAuthStore();
+  const { isAuthenticated, hasHydrated } = useAuthStore();
 
   useEffect(() => {
+    if (!hasHydrated) {
+      return;
+    }
+
     if (!isAuthenticated) {
       const encodedPath = encodeURIComponent(pathname);
       router.replace(`/login?next=${encodedPath}`);
     }
-  }, [isAuthenticated, pathname, router]);
+  }, [hasHydrated, isAuthenticated, pathname, router]);
 
-  if (!isAuthenticated) {
+  if (!hasHydrated || !isAuthenticated) {
     return null;
   }
 

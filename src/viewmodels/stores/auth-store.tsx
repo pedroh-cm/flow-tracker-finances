@@ -1,60 +1,77 @@
 "use client";
 
-import { createContext, ReactNode, useCallback, useContext, useMemo, useState } from "react";
+import { ReactNode } from "react";
+import { create } from "zustand";
+import { createJSONStorage, persist } from "zustand/middleware";
 
 import { AuthUser } from "@/src/models/entities/auth-user";
-import { LocalAuthRepository } from "@/src/models/services/local-auth-repository";
-import { LoginUseCase } from "@/src/viewmodels/use-cases/login-use-case";
-import { LogoutUseCase } from "@/src/viewmodels/use-cases/logout-use-case";
 
-type AuthStoreContextValue = {
+type AuthStoreState = {
   user: AuthUser | null;
-  isAuthenticated: boolean;
+  hasHydrated: boolean;
   login: (email: string, password: string) => void;
   logout: () => void;
+  setHasHydrated: (hasHydrated: boolean) => void;
 };
 
-const AuthStoreContext = createContext<AuthStoreContextValue | null>(null);
+const createUserFromEmail = (email: string): AuthUser => ({
+  name: email.split("@")[0],
+  email,
+});
 
-const authRepository = new LocalAuthRepository();
-const loginUseCase = new LoginUseCase(authRepository);
-const logoutUseCase = new LogoutUseCase(authRepository);
+const useAuthBaseStore = create<AuthStoreState>()(
+  persist(
+    (set) => ({
+      user: null,
+      hasHydrated: false,
+      login: (email, password) => {
+        if (!email || !password) {
+          throw new Error("Preencha todos os campos");
+        }
+
+        if (password.length < 4) {
+          throw new Error("Senha deve ter pelo menos 4 caracteres");
+        }
+
+        set({ user: createUserFromEmail(email) });
+      },
+      logout: () => {
+        set({ user: null });
+      },
+      setHasHydrated: (hasHydrated) => {
+        set({ hasHydrated });
+      },
+    }),
+    {
+      name: "flowtrack-auth",
+      storage: createJSONStorage(() => localStorage),
+      partialize: (state) => ({ user: state.user }),
+      onRehydrateStorage: () => (state) => {
+        state?.setHasHydrated(true);
+      },
+    },
+  ),
+);
 
 type AuthStoreProviderProps = {
   children: ReactNode;
 };
 
 export function AuthStoreProvider({ children }: AuthStoreProviderProps) {
-  const [user, setUser] = useState<AuthUser | null>(() => authRepository.getCurrentUser());
-
-  const login = useCallback((email: string, password: string) => {
-    const loggedUser = loginUseCase.execute(email, password);
-    setUser(loggedUser);
-  }, []);
-
-  const logout = useCallback(() => {
-    logoutUseCase.execute();
-    setUser(null);
-  }, []);
-
-  const contextValue = useMemo(
-    () => ({
-      user,
-      isAuthenticated: Boolean(user),
-      login,
-      logout,
-    }),
-    [login, logout, user],
-  );
-
-  return <AuthStoreContext.Provider value={contextValue}>{children}</AuthStoreContext.Provider>;
+  return <>{children}</>;
 }
 
 export function useAuthStore() {
-  const context = useContext(AuthStoreContext);
-  if (!context) {
-    throw new Error("useAuthStore must be used within AuthStoreProvider");
-  }
+  const user = useAuthBaseStore((state) => state.user);
+  const hasHydrated = useAuthBaseStore((state) => state.hasHydrated);
+  const login = useAuthBaseStore((state) => state.login);
+  const logout = useAuthBaseStore((state) => state.logout);
 
-  return context;
+  return {
+    user,
+    hasHydrated,
+    isAuthenticated: Boolean(user),
+    login,
+    logout,
+  };
 }

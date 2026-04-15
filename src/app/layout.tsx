@@ -14,8 +14,35 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "FlowTrackFinances",
-  description: "A simple finance tracker built with Next.js, React Query, and Tailwind CSS.",
+  metadataBase: new URL("https://flow-tracker-finances.vercel.app"),
+  title: {
+    default: "FlowTrack — Gestão Financeira Inteligente",
+    template: "%s | FlowTrack",
+  },
+  description:
+    "Gerencie suas finanças pessoais com facilidade. Acompanhe transações, investimentos e tome decisões financeiras inteligentes.",
+  keywords: ["finanças pessoais", "gestão financeira", "controle de gastos", "investimentos", "transações"],
+  authors: [{ name: "FlowTrack" }],
+  creator: "FlowTrack",
+  openGraph: {
+    type: "website",
+    locale: "pt_BR",
+    url: "https://flow-tracker-finances.vercel.app",
+    siteName: "FlowTrack",
+    title: "FlowTrack — Gestão Financeira Inteligente",
+    description:
+      "Gerencie suas finanças pessoais com facilidade. Acompanhe transações, investimentos e tome decisões financeiras inteligentes.",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "FlowTrack — Gestão Financeira Inteligente",
+    description:
+      "Gerencie suas finanças pessoais com facilidade. Acompanhe transações, investimentos e tome decisões financeiras inteligentes.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({

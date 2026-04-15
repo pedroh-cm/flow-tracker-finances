@@ -6,6 +6,7 @@ import { ReactNode, useState } from "react";
 import { AuthStoreProvider } from "@/src/viewmodels/stores/auth-store";
 import { ThemeStoreProvider } from "@/src/viewmodels/stores/theme-store";
 import { TransactionStoreProvider } from "@/src/viewmodels/stores/transaction-store";
+import { Toaster } from "@/src/views/components/ui/feedback";
 
 type ProvidersProps = {
   children: ReactNode;
@@ -28,7 +29,10 @@ export function Providers({ children }: ProvidersProps) {
     <QueryClientProvider client={queryClient}>
       <ThemeStoreProvider>
         <AuthStoreProvider>
-          <TransactionStoreProvider>{children}</TransactionStoreProvider>
+          <TransactionStoreProvider>
+            {children}
+            <Toaster />
+          </TransactionStoreProvider>
         </AuthStoreProvider>
       </ThemeStoreProvider>
     </QueryClientProvider>
