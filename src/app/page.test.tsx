@@ -1,19 +1,23 @@
-import { createElement } from 'react';
-import { renderToStaticMarkup } from 'react-dom/server';
+import { render, screen } from "@testing-library/react";
 
-import Home from './page';
+import { Providers } from "@/src/app/providers";
+import Home from "./page";
 
-jest.mock('next/image', () => ({
+jest.mock("next/image", () => ({
   __esModule: true,
   default: (props: React.ComponentProps<'img'>) => {
-    return createElement('img', { ...props, alt: props.alt ?? '' });
+    return <img {...props} alt={props.alt ?? ""} />;
   },
 }));
 
-describe('Home page', () => {
-  it('renders the main heading', () => {
-    const html = renderToStaticMarkup(<Home />);
+describe("Home page", () => {
+  it("renders the main heading", () => {
+    render(
+      <Providers>
+        <Home />
+      </Providers>,
+    );
 
-    expect(html).toMatch(/To get started, edit the page\.tsx file\./i);
+    expect(screen.getByRole("heading", { name: /suas finanças no/i })).toBeInTheDocument();
   });
 });

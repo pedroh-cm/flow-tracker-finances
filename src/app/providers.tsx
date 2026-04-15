@@ -3,6 +3,10 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactNode, useState } from "react";
 
+import { AuthStoreProvider } from "@/src/viewmodels/stores/auth-store";
+import { ThemeStoreProvider } from "@/src/viewmodels/stores/theme-store";
+import { TransactionStoreProvider } from "@/src/viewmodels/stores/transaction-store";
+
 type ProvidersProps = {
   children: ReactNode;
 };
@@ -22,7 +26,11 @@ export function Providers({ children }: ProvidersProps) {
 
   return (
     <QueryClientProvider client={queryClient}>
-      {children}
+      <ThemeStoreProvider>
+        <AuthStoreProvider>
+          <TransactionStoreProvider>{children}</TransactionStoreProvider>
+        </AuthStoreProvider>
+      </ThemeStoreProvider>
     </QueryClientProvider>
   );
 }
