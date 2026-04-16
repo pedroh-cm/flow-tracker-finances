@@ -21,7 +21,7 @@ const cards = [
   {
     brand: "Mastercard",
     last4: "4821",
-    name: "João Dev",
+    name: "Pedro Henrique",
     expiry: "08/28",
     limit: 12000,
     used: 4350,
@@ -30,7 +30,7 @@ const cards = [
   {
     brand: "Visa",
     last4: "7733",
-    name: "João Dev",
+    name: "Pedro Henrique",
     expiry: "11/27",
     limit: 8000,
     used: 2100,

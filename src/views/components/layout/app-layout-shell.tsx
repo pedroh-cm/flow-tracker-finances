@@ -19,7 +19,7 @@ export function AppLayoutShell({ children }: AppLayoutShellProps) {
         <header className="flex h-16 items-center border-b border-border px-4 lg:hidden">
           <button
             onClick={() => setSidebarOpen(true)}
-            className="rounded-md p-2 text-muted-foreground hover:text-foreground"
+            className="cursor-pointer rounded-md p-2 text-muted-foreground hover:text-foreground"
             aria-label="Abrir menu"
           >
             <Menu size={22} />

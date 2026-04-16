@@ -6,11 +6,22 @@ import { createJSONStorage, persist } from "zustand/middleware";
 
 import { AuthUser } from "@/src/models/entities/auth-user";
 
+type UserProfile = {
+  profileImageUrl?: string;
+  phone?: string;
+  preferences?: {
+    emailNotifications: boolean;
+    theme: "light" | "dark" | "system";
+  };
+};
+
 type AuthStoreState = {
   user: AuthUser | null;
+  profile: UserProfile;
   hasHydrated: boolean;
   login: (email: string, password: string) => void;
   logout: () => void;
+  updateProfile: (profile: Partial<UserProfile>) => void;
   setHasHydrated: (hasHydrated: boolean) => void;
 };
 
@@ -23,6 +34,7 @@ const useAuthBaseStore = create<AuthStoreState>()(
   persist(
     (set) => ({
       user: null,
+      profile: {},
       hasHydrated: false,
       login: (email, password) => {
         if (!email || !password) {
@@ -38,6 +50,9 @@ const useAuthBaseStore = create<AuthStoreState>()(
       logout: () => {
         set({ user: null });
       },
+      updateProfile: (profile) => {
+        set((state) => ({ profile: { ...state.profile, ...profile } }));
+      },
       setHasHydrated: (hasHydrated) => {
         set({ hasHydrated });
       },
@@ -45,7 +60,7 @@ const useAuthBaseStore = create<AuthStoreState>()(
     {
       name: "flowtrack-auth",
       storage: createJSONStorage(() => localStorage),
-      partialize: (state) => ({ user: state.user }),
+      partialize: (state) => ({ user: state.user, profile: state.profile }),
       onRehydrateStorage: () => (state) => {
         state?.setHasHydrated(true);
       },
@@ -63,15 +78,19 @@ export function AuthStoreProvider({ children }: AuthStoreProviderProps) {
 
 export function useAuthStore() {
   const user = useAuthBaseStore((state) => state.user);
+  const profile = useAuthBaseStore((state) => state.profile);
   const hasHydrated = useAuthBaseStore((state) => state.hasHydrated);
   const login = useAuthBaseStore((state) => state.login);
   const logout = useAuthBaseStore((state) => state.logout);
+  const updateProfile = useAuthBaseStore((state) => state.updateProfile);
 
   return {
     user,
+    profile,
     hasHydrated,
     isAuthenticated: Boolean(user),
     login,
     logout,
+    updateProfile,
   };
 }

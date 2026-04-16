@@ -17,6 +17,13 @@ const config: StorybookConfig = {
     viteConfig.resolve.alias = {
       ...(viteConfig.resolve.alias ?? {}),
       "@": path.resolve(__dirname, ".."),
+      "next/link": path.resolve(__dirname, "mocks/next-link.tsx"),
+      "next/navigation": path.resolve(__dirname, "mocks/next-navigation.ts"),
+    };
+
+    viteConfig.define = {
+      ...(viteConfig.define ?? {}),
+      "process.env": {},
     };
 
     return viteConfig;

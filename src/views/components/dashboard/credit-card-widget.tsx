@@ -1,6 +1,7 @@
 "use client";
 
 import { CreditCard } from "lucide-react";
+import { CardBrandLogo } from "./card-brand-logo";
 
 type CreditCardInfo = {
   brand: string;
@@ -29,7 +30,10 @@ export function CreditCardWidget({ card }: CreditCardWidgetProps) {
 
       <div className="flex items-start justify-between">
         <p className="text-xs font-medium opacity-80">{card.brand}</p>
-        <CreditCard size={20} className="opacity-60" />
+        <CardBrandLogo 
+          brand={card.brand.toLowerCase() as "visa" | "mastercard"} 
+          className="h-6 w-10" 
+        />
       </div>
       <p className="mt-4 font-display text-lg font-bold tracking-[0.2em]">
         •••• •••• •••• {card.last4}

@@ -33,7 +33,7 @@ export function SummaryCard({
         {toggleable && onToggle && (
           <button
             onClick={onToggle}
-            className="text-muted-foreground hover:text-foreground transition-colors"
+            className="cursor-pointer text-muted-foreground hover:text-foreground transition-colors"
             aria-label={hidden ? "Mostrar valor" : "Ocultar valor"}
           >
             {hidden ? <Eye size={16} /> : <EyeOff size={16} />}

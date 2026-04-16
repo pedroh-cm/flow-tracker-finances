@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
@@ -16,6 +17,7 @@ import {
 import { cn } from "@/src/lib/utils";
 import { useAuthStore } from "@/src/viewmodels/stores/auth-store";
 import { useThemeStore } from "@/src/viewmodels/stores/theme-store";
+import { LogoutConfirmDialog } from "@/src/views/components/auth/logout-confirm-dialog";
 
 const NAV_ITEMS = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -32,8 +34,14 @@ type AppSidebarProps = {
 export function AppSidebar({ open, onClose }: AppSidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
-  const { user, logout } = useAuthStore();
+  const { user, profile, logout } = useAuthStore();
   const { theme, toggleTheme } = useThemeStore();
+  const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
+
+  const handleLogout = () => {
+    logout();
+    router.push("/");
+  };
 
   return (
     <>
@@ -56,7 +64,7 @@ export function AppSidebar({ open, onClose }: AppSidebarProps) {
           </span>
           <button
             onClick={onClose}
-            className="rounded-md p-1 text-muted-foreground hover:text-foreground lg:hidden"
+            className="cursor-pointer rounded-md p-1 text-muted-foreground hover:text-foreground lg:hidden"
             aria-label="Fechar menu"
           >
             <X size={18} />
@@ -90,7 +98,7 @@ export function AppSidebar({ open, onClose }: AppSidebarProps) {
         <div className="border-t border-border/40 p-3 space-y-2">
           <button
             onClick={toggleTheme}
-            className="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-sm text-sidebar-foreground hover:bg-sidebar-accent/50 transition-all duration-200"
+            className="cursor-pointer flex w-full items-center gap-3 rounded-xl px-3 py-2 text-sm text-sidebar-foreground hover:bg-sidebar-accent/50 transition-all duration-200"
             title={theme === "dark" ? "Modo Claro" : "Modo Escuro"}
           >
             {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
@@ -99,20 +107,28 @@ export function AppSidebar({ open, onClose }: AppSidebarProps) {
 
           <div className="flex items-center justify-between px-1">
             <div className="flex items-center gap-3">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-primary text-xs font-bold text-primary-foreground shadow-sm">
-                {user?.name?.slice(0, 2).toUpperCase() || "FT"}
-              </div>
+              {profile?.profileImageUrl ? (
+                <div>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={profile.profileImageUrl}
+                    alt="Profile"
+                    className="h-8 w-8 rounded-lg object-cover shadow-sm"
+                  />
+                </div>
+              ) : (
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-primary text-xs font-bold text-primary-foreground shadow-sm">
+                  {user?.name?.slice(0, 2).toUpperCase() || "FT"}
+                </div>
+              )}
               <div className="min-w-0">
                 <p className="truncate text-xs font-semibold text-foreground">{user?.name || "Usuário"}</p>
                 <p className="truncate text-[10px] text-muted-foreground">{user?.email || ""}</p>
               </div>
             </div>
             <button
-              onClick={() => {
-                logout();
-                router.push("/");
-              }}
-              className="rounded-lg p-1.5 text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"
+              onClick={() => setLogoutDialogOpen(true)}
+              className="cursor-pointer rounded-lg p-1.5 text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"
               title="Sair"
               aria-label="Sair"
             >
@@ -121,6 +137,12 @@ export function AppSidebar({ open, onClose }: AppSidebarProps) {
           </div>
         </div>
       </aside>
+
+      <LogoutConfirmDialog
+        open={logoutDialogOpen}
+        onOpenChange={setLogoutDialogOpen}
+        onConfirm={handleLogout}
+      />
     </>
   );
 }

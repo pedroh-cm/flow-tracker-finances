@@ -28,7 +28,7 @@ export function LandingPage() {
           <div className="flex items-center gap-3">
             <button
               onClick={toggleTheme}
-              className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+              className="cursor-pointer rounded-lg p-2 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
               aria-label="Alternar tema"
             >
               {hasHydrated && (theme === "dark" ? <Sun size={18} /> : <Moon size={18} />)}

@@ -1,4 +1,11 @@
+"use client";
+
+import { useMemo } from "react";
 import { TrendingDown, TrendingUp } from "lucide-react";
+
+import { useTransactionStore } from "@/src/viewmodels/stores/transaction-store";
+import { InvestmentAllocationChart } from "@/src/views/components/investments/investment-allocation-chart";
+import { InvestmentCapacity } from "@/src/views/components/investments/investment-capacity";
 
 const investments = [
   { name: "Tesouro Selic 2029", type: "Renda Fixa", value: 12500, change: 1.2 },
@@ -11,6 +18,14 @@ const investments = [
 const total = investments.reduce((sum, investment) => sum + investment.value, 0);
 
 export function InvestmentsPage() {
+  const { transactions, balance } = useTransactionStore();
+
+  // Calcular renda mensal (transações positivas)
+  const monthlyIncome = useMemo(() => {
+    return transactions
+      .filter((t) => t.amount > 0)
+      .reduce((sum, t) => sum + t.amount, 0);
+  }, [transactions]);
   return (
     <div className="mx-auto max-w-5xl space-y-6">
       <div>
@@ -23,6 +38,16 @@ export function InvestmentsPage() {
         <p className="mt-1 text-3xl font-bold text-foreground">
           {total.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
         </p>
+      </div>
+
+      {/* Gráficos de Análise */}
+      <div className="animate-fade-in space-y-6" style={{ animationDelay: "0.1s" }}>
+        <InvestmentAllocationChart investments={investments} />
+        <InvestmentCapacity
+          totalInvested={total}
+          monthlyIncome={monthlyIncome}
+          totalBalance={balance}
+        />
       </div>
 
       <div className="animate-fade-in space-y-3" style={{ animationDelay: "0.15s" }}>

@@ -12,6 +12,7 @@ import {
 } from "@/src/models/entities/transaction";
 import { useTransactionStore } from "@/src/viewmodels/stores/transaction-store";
 import { TransactionModal } from "@/src/views/components/transactions/transaction-modal";
+import { ExportPdfButton } from "@/src/views/components/transactions/export-pdf-button";
 import { Button } from "@/src/views/components/ui/button";
 import { Input } from "@/src/views/components/ui/form";
 import {
@@ -107,6 +108,8 @@ export function TransactionsPage() {
             ))}
           </SelectContent>
         </Select>
+
+        <ExportPdfButton transactions={filteredTransactions} fileName="despesas" />
       </div>
 
       <div className="animate-fade-in overflow-hidden rounded-xl border border-border bg-card shadow-sm">
@@ -159,7 +162,7 @@ export function TransactionsPage() {
                 <button
                   type="button"
                   onClick={() => handleEdit(transaction)}
-                  className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                  className="cursor-pointer rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                   aria-label={`Editar ${transaction.description}`}
                 >
                   <Pencil size={14} />
@@ -167,7 +170,7 @@ export function TransactionsPage() {
                 <button
                   type="button"
                   onClick={() => handleDelete(transaction.id)}
-                  className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
+                  className="cursor-pointer rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
                   aria-label={`Excluir ${transaction.description}`}
                 >
                   <Trash2 size={14} />
