@@ -1,7 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { X } from "lucide-react";
+import { X, CalendarIcon } from "lucide-react";
+import { format, parseISO } from "date-fns";
+import { ptBR } from "date-fns/locale";
+
+import { Calendar } from "@/src/views/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/src/views/components/ui/popover";
+import { cn } from "@/src/lib/utils";
 
 import {
   Transaction,
@@ -179,7 +185,30 @@ function TransactionModalContent({ onClose, onSave, transaction }: TransactionMo
             </div>
             <div>
               <Label>Data</Label>
-              <Input type="date" value={form.date} onChange={(event) => setForm({ ...form, date: event.target.value })} />
+              <Popover>
+                <PopoverTrigger asChild>
+                  <button
+                    type="button"
+                    className={cn(
+                      "flex h-9 w-full items-center justify-between rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50",
+                      !form.date && "text-muted-foreground",
+                    )}
+                  >
+                    {form.date
+                      ? format(parseISO(form.date), "dd/MM/yyyy", { locale: ptBR })
+                      : "Selecionar data"}
+                    <CalendarIcon className="h-4 w-4 opacity-50" />
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={form.date ? parseISO(form.date) : undefined}
+                    onSelect={(day) => setForm({ ...form, date: day ? format(day, "yyyy-MM-dd") : "" })}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
               {errors.date ? <p className="mt-1 text-xs text-destructive">{errors.date}</p> : null}
             </div>
           </div>

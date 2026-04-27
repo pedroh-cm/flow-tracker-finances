@@ -41,6 +41,12 @@ export {
   Toaster,
 } from "./feedback";
 
+// Calendar
+export { Calendar } from "./calendar";
+
+// Popover
+export { Popover, PopoverTrigger, PopoverContent } from "./popover";
+
 // Navigation Components
 export {
   DropdownMenu,
