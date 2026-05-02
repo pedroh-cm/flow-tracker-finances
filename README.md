@@ -85,7 +85,7 @@ src/
 
 ### Pré-requisitos
 
-- Node.js 18+
+- Node.js 18 (definido em `.nvmrc`)
 - Yarn 1.22+
 
 ### Instalação
@@ -94,6 +94,9 @@ src/
 # Clone o repositório
 git clone https://github.com/pedroh-cm/flow-tracker-finances.git
 cd flow-tracker-finances
+
+# Use a versão correta do Node
+nvm use
 
 # Instale as dependências
 yarn install
