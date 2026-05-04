@@ -3,8 +3,9 @@
 import { useMemo, useState } from "react";
 import { ArrowDownLeft, ArrowUpRight, CreditCard, Plus, Wallet } from "lucide-react";
 
-import { categoryLabels, type TransactionCategory } from "@/src/models/entities/transaction";
+import { categoryLabels, type Transaction, type TransactionCategory } from "@/src/models/entities/transaction";
 import { useTransactionStore } from "@/src/viewmodels/stores/transaction-store";
+import { useToast } from "@/src/hooks/use-toast";
 import { BalanceAreaChart } from "@/src/views/components/dashboard/balance-area-chart";
 import { CategoryPieChart } from "@/src/views/components/dashboard/category-pie-chart";
 import { CreditCardWidget } from "@/src/views/components/dashboard/credit-card-widget";
@@ -40,7 +41,16 @@ const cards = [
 
 export function DashboardPage() {
   const { transactions, balance, addTransaction } = useTransactionStore();
+  const { toast } = useToast();
   const [modalOpen, setModalOpen] = useState(false);
+
+  const handleSave = (data: Omit<Transaction, "id">) => {
+    addTransaction(data);
+    toast({
+      title: "Transação adicionada",
+      description: "Nova transação registrada com sucesso.",
+    });
+  };
   const [showBalance, setShowBalance] = useState(true);
 
   const income = useMemo(
@@ -180,7 +190,7 @@ export function DashboardPage() {
 
       <RecentTransactions transactions={recentTransactions} />
 
-      <TransactionModal open={modalOpen} onClose={() => setModalOpen(false)} onSave={addTransaction} />
+      <TransactionModal open={modalOpen} onClose={() => setModalOpen(false)} onSave={handleSave} />
     </div>
   );
 }

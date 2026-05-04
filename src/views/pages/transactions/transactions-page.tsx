@@ -11,6 +11,7 @@ import {
   typeLabels,
 } from "@/src/models/entities/transaction";
 import { useTransactionStore } from "@/src/viewmodels/stores/transaction-store";
+import { useToast } from "@/src/hooks/use-toast";
 import { TransactionModal } from "@/src/views/components/transactions/transaction-modal";
 import { ExportPdfButton } from "@/src/views/components/transactions/export-pdf-button";
 import { Button } from "@/src/views/components/ui/button";
@@ -28,6 +29,7 @@ const formatCurrency = (value: number) =>
 
 export function TransactionsPage() {
   const { transactions, addTransaction, updateTransaction, deleteTransaction } = useTransactionStore();
+  const { toast } = useToast();
 
   const [modalOpen, setModalOpen] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
@@ -52,19 +54,30 @@ export function TransactionsPage() {
   };
 
   const handleDelete = (id: string) => {
-    if (window.confirm("Tem certeza que deseja excluir esta transação?")) {
-      deleteTransaction(id);
-    }
+    deleteTransaction(id);
+    toast({
+      title: "Transação removida",
+      description: "A transação foi excluída com sucesso.",
+      variant: "destructive",
+    });
   };
 
   const handleSave = (data: Omit<Transaction, "id">) => {
     if (editingTransaction) {
       updateTransaction(editingTransaction.id, data);
       setEditingTransaction(null);
+      toast({
+        title: "Transação atualizada",
+        description: "As alterações foram salvas com sucesso.",
+      });
       return;
     }
 
     addTransaction(data);
+    toast({
+      title: "Transação adicionada",
+      description: "Nova transação registrada com sucesso.",
+    });
   };
 
   const closeModal = () => {
