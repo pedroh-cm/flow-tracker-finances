@@ -1,0 +1,50 @@
+---
+title: Desenvolvimento
+description: Scripts, workflows e boas práticas de desenvolvimento
+---
+
+## Scripts principais
+
+| Comando | Descrição |
+|---------|-----------|
+| `yarn dev` | Shell + todos os remotes |
+| `yarn dev:shell` | Apenas Next.js (porta 3000) |
+| `yarn dev:remotes` | Apenas remotes (turbo) |
+| `yarn dev:local` | Shell em modo local (sem MF) |
+| `yarn dev:docs` | Site de documentação Astro |
+| `yarn build` | Build remotes + shell |
+| `yarn build:remotes` | Build apenas remotes |
+| `yarn test` | Testes Jest |
+
+## Desenvolver um remote isolado
+
+```bash
+yarn workspace @flowtrack/mfe-dashboard dev
+```
+
+Acesse `http://localhost:3002` para testar o MFE standalone.
+
+## Adicionar um novo remote
+
+1. Crie `remotes/mfe-novo/` com estrutura padrão
+2. Adicione entrada em `packages/mf-config/src/index.ts`
+3. Registre em `packages/shared/src/registry.ts`
+4. Adicione loader em `mfe-loader.tsx` (modo local)
+5. Crie rota no shell com `MfeLoader`
+
+## Testes
+
+```bash
+yarn test
+yarn test:watch
+yarn test:coverage
+```
+
+Testes usam `NEXT_PUBLIC_MFE_MODE=local` automaticamente.
+
+## Storybook
+
+```bash
+yarn storybook
+# http://localhost:6006
+```

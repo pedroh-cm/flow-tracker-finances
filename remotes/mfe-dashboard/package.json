@@ -1,0 +1,22 @@
+{
+  "name": "@flowtrack/mfe-dashboard",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "react": "19.2.4",
+    "react-dom": "19.2.4"
+  },
+  "devDependencies": {
+    "@flowtrack/mf-config": "1.0.0",
+    "@module-federation/vite": "^1.16.12",
+    "@vitejs/plugin-react": "^4.4.1",
+    "typescript": "^5",
+    "vite": "^5.4.14"
+  }
+}

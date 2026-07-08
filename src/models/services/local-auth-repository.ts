@@ -21,6 +21,7 @@ export class LocalAuthRepository implements AuthRepository {
     void password;
 
     const user: AuthUser = {
+      id: `local-${email}`,
       name: email.split("@")[0],
       email,
     };

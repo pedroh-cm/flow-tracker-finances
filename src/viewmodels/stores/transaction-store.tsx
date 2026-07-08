@@ -5,6 +5,7 @@ import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
 import { initialTransactions, Transaction } from "@/src/models/entities/transaction";
+import { MFE_EVENTS, mfeEventBus } from "@/src/microfrontends/shared/event-bus";
 
 type TransactionStoreState = {
   transactions: Transaction[];
@@ -34,6 +35,7 @@ const useTransactionBaseStore = create<TransactionStoreState>()(
         set((state) => ({
           transactions: [nextTransaction, ...state.transactions],
         }));
+        mfeEventBus.emit(MFE_EVENTS.TRANSACTION_CREATED, nextTransaction);
       },
       updateTransaction: (id, transaction) => {
         set((state) => ({
@@ -41,11 +43,13 @@ const useTransactionBaseStore = create<TransactionStoreState>()(
             currentTransaction.id === id ? { ...transaction, id } : currentTransaction,
           ),
         }));
+        mfeEventBus.emit(MFE_EVENTS.TRANSACTION_UPDATED, { id, ...transaction });
       },
       deleteTransaction: (id) => {
         set((state) => ({
           transactions: state.transactions.filter((currentTransaction) => currentTransaction.id !== id),
         }));
+        mfeEventBus.emit(MFE_EVENTS.TRANSACTION_DELETED, { id });
       },
     }),
     {

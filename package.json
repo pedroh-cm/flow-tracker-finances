@@ -2,9 +2,25 @@
   "name": "flow-track-finances",
   "version": "0.1.0",
   "private": true,
+  "packageManager": "yarn@1.22.22",
+  "workspaces": [
+    "packages/*",
+    "remotes/*",
+    "docs"
+  ],
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
+    "dev": "NEXT_PUBLIC_MFE_MODE=local next dev",
+    "dev:shell": "next dev",
+    "dev:remotes": "turbo dev --filter='@flowtrack/mfe-*'",
+    "dev:local": "NEXT_PUBLIC_MFE_MODE=local next dev",
+    "dev:federation": "yarn build:remotes && concurrently -k -n remotes,shell -c magenta,blue \"yarn preview:remotes\" \"next dev\"",
+    "dev:all": "concurrently -k -n shell,remotes -c blue,magenta \"yarn dev:shell\" \"yarn dev:remotes\"",
+    "dev:docs": "yarn workspace @flowtrack/docs dev",
+    "build": "yarn build:remotes && yarn build:shell",
+    "build:shell": "next build",
+    "build:remotes": "yarn workspace @flowtrack/mfe-auth build && yarn workspace @flowtrack/mfe-dashboard build && yarn workspace @flowtrack/mfe-transactions build && yarn workspace @flowtrack/mfe-investments build",
+    "build:docs": "yarn workspace @flowtrack/docs build",
+    "preview:remotes": "turbo preview --filter='@flowtrack/mfe-*'",
     "start": "next start",
     "lint": "eslint",
     "test": "jest",
@@ -14,6 +30,8 @@
     "build-storybook": "storybook build"
   },
   "dependencies": {
+    "@flowtrack/mf-config": "1.0.0",
+    "@flowtrack/shared": "1.0.0",
     "@hookform/resolvers": "^3.10.0",
     "@radix-ui/react-accordion": "^1.2.11",
     "@radix-ui/react-alert-dialog": "^1.1.14",
@@ -42,6 +60,7 @@
     "@radix-ui/react-toggle": "^1.1.9",
     "@radix-ui/react-toggle-group": "^1.1.10",
     "@radix-ui/react-tooltip": "^1.2.7",
+    "@module-federation/runtime": "^2.6.0",
     "@tanstack/react-query": "^5.83.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -51,6 +70,7 @@
     "framer-motion": "^12.38.0",
     "html2canvas": "^1.4.1",
     "input-otp": "^1.4.2",
+    "jose": "^6.2.3",
     "jspdf": "^4.2.1",
     "lucide-react": "^1.8.0",
     "next": "16.2.3",
@@ -67,6 +87,7 @@
     "zustand": "^5.0.8"
   },
   "devDependencies": {
+    "@module-federation/vite": "^1.16.12",
     "@storybook/addon-essentials": "^8.6.14",
     "@storybook/addon-interactions": "^8.6.14",
     "@storybook/react-vite": "^8.6.14",
@@ -80,12 +101,14 @@
     "@types/react-dom": "^19",
     "@vitejs/plugin-react": "^4.4.1",
     "autoprefixer": "^10.4.21",
+    "concurrently": "^10.0.3",
     "eslint": "^9",
     "eslint-config-next": "16.2.3",
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^29.7.0",
     "storybook": "^8.6.14",
     "tailwindcss": "^4",
+    "turbo": "^2.10.0",
     "typescript": "^5",
     "vite": "^5.4.14"
   }

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { DashboardPage } from "@/src/views/pages/dashboard/dashboard-page";
+import { DashboardMfePage } from "./dashboard-mfe";
 
 export const metadata: Metadata = {
   title: "Dashboard",
@@ -12,5 +12,5 @@ export const metadata: Metadata = {
 };
 
 export default function DashboardRoutePage() {
-  return <DashboardPage />;
+  return <DashboardMfePage />;
 }

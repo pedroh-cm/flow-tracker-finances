@@ -1,0 +1,61 @@
+---
+title: Começando
+description: Guia rápido para rodar o FlowTrack localmente
+---
+
+## Pré-requisitos
+
+- Node.js 18+ (`.nvmrc`)
+- Yarn 1.22+
+
+## Instalação
+
+```bash
+git clone https://github.com/pedroh-cm/flow-tracker-finances.git
+cd flow-tracker-finances
+nvm use
+yarn install
+cp .env.example .env.local
+```
+
+## Configurar `.env.local`
+
+```bash
+AUTH_SECRET=dev-secret-change-in-production
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+```
+
+## Rodar com Module Federation (recomendado)
+
+```bash
+yarn dev
+```
+
+Isso inicia:
+
+| Serviço | URL |
+|---------|-----|
+| Shell | http://localhost:3000 |
+| Auth MFE | http://localhost:3001 |
+| Dashboard MFE | http://localhost:3002 |
+| Transações MFE | http://localhost:3003 |
+| Investimentos MFE | http://localhost:3004 |
+
+## Rodar apenas o shell (modo local)
+
+```bash
+yarn dev:local
+```
+
+Carrega módulos via dynamic import, sem remotes.
+
+## Documentação
+
+```bash
+yarn dev:docs
+# http://localhost:4321
+```
+
+## Login
+
+Use `demo@flowtrack.com` / `demo123456`

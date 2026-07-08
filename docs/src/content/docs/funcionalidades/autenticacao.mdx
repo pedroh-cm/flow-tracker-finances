@@ -1,0 +1,53 @@
+---
+title: Autenticação JWT
+description: Sistema de autenticação com JWT, cookies httpOnly e proxy
+---
+
+## Visão geral
+
+O FlowTrack implementa autenticação real com:
+
+- **JWT** assinado com `jose` (HS256)
+- **Cookie httpOnly** (`flowtrack-session`)
+- **Middleware** Next.js para proteção de rotas
+- **API Routes** REST
+
+## Endpoints
+
+| Método | Rota | Descrição |
+|--------|------|-----------|
+| POST | `/api/auth/login` | Autentica e define cookie |
+| POST | `/api/auth/logout` | Remove sessão |
+| GET | `/api/auth/me` | Retorna usuário da sessão |
+
+## Fluxo de login
+
+1. Usuário submete formulário no MFE Auth
+2. `auth-store` chama `POST /api/auth/login`
+3. API valida credenciais (hash SHA-256)
+4. Gera JWT e define cookie httpOnly
+5. Shell redireciona para `/dashboard`
+6. Event bus emite `auth:login`
+
+## Proteção de rotas
+
+O `src/proxy.ts` verifica o cookie JWT em:
+
+- `/dashboard`, `/transactions`, `/investments`, `/settings`
+
+Usuários não autenticados são redirecionados para `/login?next=...`
+
+## Credenciais demo
+
+| E-mail | Senha |
+|--------|-------|
+| `demo@flowtrack.com` | `demo123456` |
+| `admin@flowtrack.com` | `admin123456` |
+
+## Variáveis
+
+```bash
+AUTH_SECRET=sua-chave-secreta-min-32-chars
+```
+
+Obrigatório em produção.

@@ -3,183 +3,114 @@
 </h1>
 
 <p align="center">
-  Aplicação moderna de gestão financeira pessoal — gerencie transações, acompanhe investimentos e tome decisões inteligentes com uma interface elegante e responsiva.
+  Gestão financeira pessoal com <strong>Module Federation</strong> — Tech Challenge FIAP Fase 02
 </p>
 
 <p align="center">
   <img alt="Next.js" src="https://img.shields.io/badge/Next.js-16-black?style=flat-square&logo=next.js" />
-  <img alt="React" src="https://img.shields.io/badge/React-19-61DAFB?style=flat-square&logo=react" />
-  <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-5-3178C6?style=flat-square&logo=typescript" />
-  <img alt="Tailwind CSS" src="https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?style=flat-square&logo=tailwindcss" />
-  <img alt="Zustand" src="https://img.shields.io/badge/Zustand-5-orange?style=flat-square" />
-  <img alt="License" src="https://img.shields.io/badge/license-MIT-green?style=flat-square" />
+  <img alt="Module Federation" src="https://img.shields.io/badge/Module_Federation-2.0-646CFF?style=flat-square" />
+  <img alt="Docker" src="https://img.shields.io/badge/Docker-Ready-2496ED?style=flat-square&logo=docker" />
+  <img alt="Astro" src="https://img.shields.io/badge/Docs-Astro-BC52EE?style=flat-square&logo=astro" />
 </p>
 
 ---
 
-## ✨ Funcionalidades
-
-- **Dashboard** — Visão geral do saldo, receitas e despesas com cards e gráficos
-- **Transações** — Criação, edição e exclusão de transações com filtros por tipo e busca por descrição
-- **Investimentos** — Acompanhamento de carteira de ativos
-- **Configurações** — Gerenciamento de perfil e preferência de tema (claro/escuro)
-- **Autenticação** — Fluxo de login com persistência de sessão
-- **Tema** — Alternância entre modo claro e escuro com persistência via localStorage
-- **Responsivo** — Interface adaptada para desktop e mobile
-
----
-
-## 🛠 Stack
-
-| Camada | Tecnologias |
-|---|---|
-| **Framework** | [Next.js 16](https://nextjs.org) com App Router |
-| **UI** | [React 19](https://react.dev), [Tailwind CSS 4](https://tailwindcss.com), [Radix UI](https://radix-ui.com) |
-| **Estado** | [Zustand 5](https://zustand-demo.pmnd.rs) com `persist` (localStorage) |
-| **Formulários** | [React Hook Form](https://react-hook-form.com) + [Zod](https://zod.dev) |
-| **Ícones** | [Lucide React](https://lucide.dev) |
-| **Testes** | [Jest](https://jestjs.io) + [Testing Library](https://testing-library.com) |
-| **Storybook** | [Storybook 8](https://storybook.js.org) |
-
----
-
-## 🗂 Estrutura do Projeto
+## Arquitetura Module Federation
 
 ```
-src/
-├── app/                        # Rotas Next.js (App Router)
-│   ├── (authenticated)/        # Rotas protegidas (dashboard, transações, etc.)
-│   └── login/
-├── hooks/                      # Hooks globais (use-toast)
-├── lib/                        # Utilitários (cn, etc.)
-├── models/
-│   ├── entities/               # Tipos e entidades de domínio
-│   ├── repositories/           # Interfaces de repositório
-│   └── services/               # Implementações (local, memory)
-├── types/                      # Declarações de tipos globais
-├── viewmodels/
-│   ├── stores/                 # Stores Zustand (auth, theme, transactions)
-│   └── use-cases/              # Lógica de negócio
-└── views/
-    ├── components/
-    │   ├── transactions/       # Componentes de transações
-    │   └── ui/                 # Design system
-    │       ├── button/
-    │       ├── feedback/       # Dialog, Toast, Toaster
-    │       ├── form/           # Input, Label, Select
-    │       └── navigation/     # DropdownMenu, Tabs
-    ├── layouts/                # Layouts reutilizáveis
-    └── pages/                  # Páginas da aplicação
-        ├── dashboard/
-        ├── investments/
-        ├── landing/
-        ├── login/
-        ├── not-found/
-        ├── settings/
-        └── transactions/
+Shell (Next.js :3000) ──► @module-federation/runtime
+        │
+        ├── mfe_auth         → :3001/remoteEntry.js
+        ├── mfe_dashboard    → :3002/remoteEntry.js
+        ├── mfe_transactions → :3003/remoteEntry.js
+        └── mfe_investments  → :3004/remoteEntry.js
 ```
 
----
+Cada MFE é um **remote Vite** independente, buildado e deployável separadamente.
 
-## 🚀 Rodando Localmente
+## Documentação
 
-### Pré-requisitos
-
-- Node.js 18 (definido em `.nvmrc`)
-- Yarn 1.22+
-
-### Instalação
+Site completo em **Astro Starlight**:
 
 ```bash
-# Clone o repositório
-git clone https://github.com/pedroh-cm/flow-tracker-finances.git
-cd flow-tracker-finances
-
-# Use a versão correta do Node
-nvm use
-
-# Instale as dependências
-yarn install
-
-# Inicie o servidor de desenvolvimento
-yarn dev
+yarn dev:docs    # http://localhost:4321
+yarn build:docs  # gera docs/dist/
 ```
 
-Acesse [http://localhost:3000](http://localhost:3000) no navegador.
+## Começando
 
-**Credenciais de acesso (demo):**
-> Use qualquer e-mail válido com senha de 6+ caracteres para fazer login.
+```bash
+yarn install
+cp .env.example .env.local
+yarn dev          # Shell + todos os remotes (Module Federation)
+```
 
----
+| Serviço | URL |
+|---------|-----|
+| Shell | http://localhost:3000 |
+| Auth MFE | http://localhost:3001 |
+| Dashboard MFE | http://localhost:3002 |
+| Transações MFE | http://localhost:3003 |
+| Investimentos MFE | http://localhost:3004 |
+| Documentação | http://localhost:4321 |
 
-## 📜 Scripts Disponíveis
+### Modo local (sem remotes)
+
+```bash
+yarn dev:local
+```
+
+## Estrutura do monorepo
+
+```
+flow-track-finances/
+├── src/                      # Shell Next.js (host)
+├── packages/
+│   ├── shared/               # Event bus, registry
+│   └── mf-config/            # Config Module Federation
+├── remotes/
+│   ├── mfe-auth/             # Remote :3001
+│   ├── mfe-dashboard/        # Remote :3002
+│   ├── mfe-transactions/     # Remote :3003
+│   └── mfe-investments/      # Remote :3004
+└── docs/                     # Documentação Astro Starlight
+```
+
+## Scripts
 
 | Comando | Descrição |
-|---|---|
-| `yarn dev` | Inicia o servidor de desenvolvimento |
-| `yarn build` | Gera o build de produção |
-| `yarn start` | Inicia o servidor de produção |
-| `yarn lint` | Executa o ESLint |
-| `yarn test` | Executa os testes unitários |
-| `yarn test:watch` | Executa os testes em modo watch |
-| `yarn test:coverage` | Gera relatório de cobertura |
-| `yarn storybook` | Inicia o Storybook na porta 6006 |
-| `yarn build-storybook` | Gera o build estático do Storybook |
+|---------|-----------|
+| `yarn dev` | Shell + remotes (federation) |
+| `yarn dev:local` | Shell sem federation |
+| `yarn dev:docs` | Documentação Astro |
+| `yarn build` | Build remotes + shell |
+| `yarn build:remotes` | Build apenas remotes |
+| `yarn test` | Testes Jest |
 
----
+## Credenciais demo
 
-## 🧪 Testes
+| E-mail | Senha |
+|--------|-------|
+| `demo@flowtrack.com` | `demo123456` |
+| `admin@flowtrack.com` | `admin123456` |
 
-Os testes utilizam **Jest** e **Testing Library**. Cada página possui seu próprio arquivo de teste co-localizado.
-
-```bash
-# Rodar todos os testes
-yarn test
-
-# Modo watch (re-executa ao salvar)
-yarn test:watch
-
-# Relatório de cobertura
-yarn test:coverage
-```
-
----
-
-## 📚 Storybook
-
-O projeto possui documentação visual de todos os componentes do design system.
+## Docker
 
 ```bash
-yarn storybook
+docker compose up --build
 ```
 
-Acesse [http://localhost:6006](http://localhost:6006). Os componentes estão organizados em:
+## Variáveis de ambiente
 
-- `Components/UI/Button`
-- `Components/UI/Form` — Input, Label, Select
-- `Components/UI/Feedback` — Dialog, Toast
-- `Components/UI/Navigation` — DropdownMenu, Tabs
-
----
-
-## 🏗 Arquitetura
-
-O projeto segue uma arquitetura em camadas inspirada em **Clean Architecture** e **MVVM**:
-
-```
-Entities → Repositories (interfaces) → Services (implementações)
-       ↓
-  Use Cases → Stores (Zustand) → ViewModels
-       ↓
-     Views (Pages + Components)
+```bash
+AUTH_SECRET=...
+NEXT_PUBLIC_MFE_AUTH_URL=http://localhost:3001
+NEXT_PUBLIC_MFE_DASHBOARD_URL=http://localhost:3002
+NEXT_PUBLIC_MFE_TRANSACTIONS_URL=http://localhost:3003
+NEXT_PUBLIC_MFE_INVESTMENTS_URL=http://localhost:3004
+# NEXT_PUBLIC_MFE_MODE=local  # desativa federation
 ```
 
-- **Persistência de estado** via `zustand/persist` com localStorage (chaves: `flowtrack-auth`, `flowtrack-theme`, `flowtrack-transactions`)
-- **Proteção de rotas** via `hasHydrated` flag no auth store, evitando redirect prematuro no SSR
-- **Hydration segura** — componentes dependentes de tema aguardam `hasHydrated` antes de renderizar ícones/textos condicionais
+## Licença
 
----
-
-## 📄 Licença
-
-Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
+MIT

@@ -14,6 +14,12 @@ export function AppLayoutShell({ children }: AppLayoutShellProps) {
 
   return (
     <div className="flex h-screen overflow-hidden">
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded-md focus:bg-primary focus:px-4 focus:py-2 focus:text-primary-foreground"
+      >
+        Pular para o conteúdo principal
+      </a>
       <AppSidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       <div className="flex flex-1 flex-col overflow-hidden">
         <header className="flex h-16 items-center border-b border-border px-4 lg:hidden">
@@ -28,7 +34,9 @@ export function AppLayoutShell({ children }: AppLayoutShellProps) {
             Flow<span className="text-gradient">Track</span>
           </span>
         </header>
-        <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">{children}</main>
+        <main id="main-content" className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8" tabIndex={-1}>
+          {children}
+        </main>
       </div>
     </div>
   );

@@ -1,0 +1,43 @@
+---
+title: FlowTrack Finances
+description: Documentação oficial do projeto Tech Challenge FIAP — Fase 02
+template: splash
+hero:
+  title: FlowTrack Finances
+  tagline: Gestão financeira pessoal com arquitetura de microfrontends e Module Federation
+  actions:
+    - text: Começar agora
+      link: /introducao/visao-geral/
+      icon: right-arrow
+      variant: primary
+    - text: Module Federation
+      link: /microfrontends/module-federation/
+      variant: minimal
+---
+
+import { Card, CardGrid } from "@astrojs/starlight/components";
+
+## O que é este projeto?
+
+FlowTrack é uma aplicação de **gestão financeira pessoal** desenvolvida para o Tech Challenge da FIAP (Fase 02). O projeto combina:
+
+- **Next.js 16** como shell (host)
+- **4 microfrontends** independentes com **Webpack Module Federation**
+- **Autenticação JWT** com cookies httpOnly
+- **Docker** para containerização
+- **Deploy cloud** (Vercel)
+
+<CardGrid>
+  <Card title="Microfrontends" icon="puzzle">
+    Auth, Dashboard, Transações e Investimentos como remotes independentes.
+  </Card>
+  <Card title="Module Federation" icon="external">
+    Cada MFE é buildado e deployado separadamente, carregado em runtime pelo shell.
+  </Card>
+  <Card title="Monorepo" icon="setting">
+    Yarn Workspaces + Turborepo para orquestração de builds.
+  </Card>
+  <Card title="Documentação" icon="document">
+    Este site Astro Starlight documenta toda a arquitetura e os guias de uso.
+  </Card>
+</CardGrid>

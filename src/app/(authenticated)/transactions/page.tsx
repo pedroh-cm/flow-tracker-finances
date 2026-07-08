@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { TransactionsPage } from "@/src/views/pages/transactions/transactions-page";
+import { TransactionsMfePage } from "./transactions-mfe";
 
 export const metadata: Metadata = {
   title: "Transações",
@@ -12,5 +12,5 @@ export const metadata: Metadata = {
 };
 
 export default function TransactionsRoutePage() {
-  return <TransactionsPage />;
+  return <TransactionsMfePage />;
 }

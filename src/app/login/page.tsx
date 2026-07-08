@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 
-import { LoginPage } from "@/src/views/pages/login/login-page";
+import { LoginMfePage } from "./login-mfe";
 
 export const metadata: Metadata = {
   title: "Entrar",
@@ -14,8 +14,14 @@ export const metadata: Metadata = {
 
 export default function LoginRoutePage() {
   return (
-    <Suspense fallback={null}>
-      <LoginPage />
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center text-sm text-muted-foreground">
+          Carregando...
+        </div>
+      }
+    >
+      <LoginMfePage />
     </Suspense>
   );
 }

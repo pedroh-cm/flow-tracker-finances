@@ -9,6 +9,8 @@ const customJestConfig = {
   testEnvironment: 'jest-environment-jsdom',
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/$1',
+    '^jspdf$': '<rootDir>/jest.mocks/jspdf.ts',
+    '^html2canvas$': '<rootDir>/jest.mocks/html2canvas.ts',
   },
 };
 

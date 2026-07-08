@@ -1,0 +1,42 @@
+---
+title: Deploy
+description: Deploy do shell e remotes em ambientes cloud
+---
+
+## Vercel (recomendado)
+
+### Shell
+
+1. Importe o repositório na Vercel
+2. Framework: **Next.js**
+3. Build: `yarn build:remotes && yarn build:shell`
+4. Configure variáveis:
+
+```bash
+AUTH_SECRET=...
+NEXT_PUBLIC_MFE_AUTH_URL=https://mfe-auth.seudominio.com
+NEXT_PUBLIC_MFE_DASHBOARD_URL=https://mfe-dashboard.seudominio.com
+NEXT_PUBLIC_MFE_TRANSACTIONS_URL=https://mfe-transactions.seudominio.com
+NEXT_PUBLIC_MFE_INVESTMENTS_URL=https://mfe-investments.seudominio.com
+```
+
+### Remotes
+
+Cada remote pode ser um projeto Vercel separado:
+
+- Root Directory: `remotes/mfe-dashboard`
+- Build: `cd ../.. && yarn install && yarn workspace @flowtrack/mfe-dashboard build`
+- Output: `dist`
+
+## CI/CD
+
+GitHub Actions em `.github/workflows/ci.yml`:
+
+- Lint
+- Testes
+- Build
+- Docker image
+
+## Produção
+
+Em produção, cada remote serve `remoteEntry.js` com CORS habilitado. O shell carrega os módulos em runtime via URLs configuradas.

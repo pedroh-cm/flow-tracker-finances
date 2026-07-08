@@ -1,0 +1,59 @@
+---
+title: Visão Geral
+description: Introdução ao FlowTrack Finances e seus objetivos no Tech Challenge
+---
+
+## Objetivo
+
+O FlowTrack Finances é uma plataforma de controle financeiro pessoal que evolui da Fase 01 para a Fase 02 do Tech Challenge FIAP, incorporando:
+
+- Arquitetura de **microfrontends** com **Module Federation**
+- **Containerização** com Docker
+- **Deploy em cloud** (Vercel recomendada)
+- Melhorias de UX, performance, segurança e acessibilidade
+
+## Stack principal
+
+| Camada | Tecnologia |
+|--------|------------|
+| Shell (Host) | Next.js 16 + App Router |
+| Remotes (MFEs) | Vite 5 + React 19 |
+| Module Federation | `@module-federation/vite` + `@module-federation/runtime` |
+| Estado | Zustand 5 com persist |
+| Auth | JWT (jose) + cookies httpOnly |
+| UI | Tailwind CSS 4 + Radix UI |
+| Monorepo | Yarn Workspaces + Turborepo |
+| Documentação | Astro Starlight |
+
+## Módulos da aplicação
+
+| Módulo | Rota | Remote MF | Porta dev |
+|--------|------|-----------|-----------|
+| Auth | `/login` | `mfe_auth` | 3001 |
+| Dashboard | `/dashboard` | `mfe_dashboard` | 3002 |
+| Transações | `/transactions` | `mfe_transactions` | 3003 |
+| Investimentos | `/investments` | `mfe_investments` | 3004 |
+| Shell | `/`, `/settings` | — | 3000 |
+
+## Estrutura do monorepo
+
+```
+flow-track-finances/
+├── src/                    # Shell Next.js (host)
+├── packages/
+│   ├── shared/             # Event bus, registry, tipos
+│   └── mf-config/          # Configuração central de Module Federation
+├── remotes/
+│   ├── mfe-auth/
+│   ├── mfe-dashboard/
+│   ├── mfe-transactions/
+│   └── mfe-investments/
+└── docs/                   # Este site de documentação (Astro)
+```
+
+## Credenciais de demonstração
+
+| E-mail | Senha |
+|--------|-------|
+| `demo@flowtrack.com` | `demo123456` |
+| `admin@flowtrack.com` | `admin123456` |

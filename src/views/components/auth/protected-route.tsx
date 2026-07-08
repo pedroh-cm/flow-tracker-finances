@@ -1,5 +1,6 @@
 "use client";
 
+import { Loader2 } from "lucide-react";
 import { useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 
@@ -12,20 +13,26 @@ type ProtectedRouteProps = {
 export function ProtectedRoute({ children }: ProtectedRouteProps) {
   const router = useRouter();
   const pathname = usePathname();
-  const { isAuthenticated, hasHydrated } = useAuthStore();
+  const { isAuthenticated, hasHydrated, isLoading } = useAuthStore();
 
   useEffect(() => {
-    if (!hasHydrated) {
-      return;
-    }
+    if (!hasHydrated || isLoading) return;
 
     if (!isAuthenticated) {
       const encodedPath = encodeURIComponent(pathname);
       router.replace(`/login?next=${encodedPath}`);
     }
-  }, [hasHydrated, isAuthenticated, pathname, router]);
+  }, [hasHydrated, isAuthenticated, isLoading, pathname, router]);
 
-  if (!hasHydrated || !isAuthenticated) {
+  if (!hasHydrated || isLoading) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" aria-label="Carregando sessão" />
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
     return null;
   }
 

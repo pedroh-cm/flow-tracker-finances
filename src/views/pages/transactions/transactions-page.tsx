@@ -1,28 +1,34 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { ArrowDownLeft, ArrowUpRight, Pencil, Plus, Search, Trash2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { ArrowDownLeft, ArrowUpRight, FileText, Pencil, Plus, Search, Trash2 } from "lucide-react";
 
+import { usePagination } from "@/src/hooks/use-pagination";
+import { useTransactionFilters } from "@/src/hooks/use-transaction-filters";
 import {
   categoryColors,
   categoryLabels,
   Transaction,
-  TransactionType,
   typeLabels,
 } from "@/src/models/entities/transaction";
 import { useTransactionStore } from "@/src/viewmodels/stores/transaction-store";
 import { useToast } from "@/src/hooks/use-toast";
 import { TransactionModal } from "@/src/views/components/transactions/transaction-modal";
 import { ExportPdfButton } from "@/src/views/components/transactions/export-pdf-button";
+import { TransactionFiltersPanel } from "@/src/views/components/transactions/transaction-filters";
+import { TransactionPagination } from "@/src/views/components/transactions/transaction-pagination";
 import { Button } from "@/src/views/components/ui/button";
 import { Input } from "@/src/views/components/ui/form";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/src/views/components/ui/form";
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/src/views/components/ui/feedback/alert-dialog";
 
 const formatCurrency = (value: number) =>
   value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -33,15 +39,22 @@ export function TransactionsPage() {
 
   const [modalOpen, setModalOpen] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
-  const [search, setSearch] = useState("");
-  const [typeFilter, setTypeFilter] = useState<string>("all");
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [showFilters, setShowFilters] = useState(false);
 
-  const filteredTransactions = useMemo(() => {
-    return transactions
-      .filter((transaction) => typeFilter === "all" || transaction.type === typeFilter)
-      .filter((transaction) => transaction.description.toLowerCase().includes(search.toLowerCase()))
-      .sort((first, second) => second.date.localeCompare(first.date));
-  }, [search, transactions, typeFilter]);
+  const { filters, setFilters, filteredTransactions, activeFilterCount, clearFilters } =
+    useTransactionFilters(transactions);
+
+  const { page, pageSize, totalPages, paginatedRange, goToPage, resetPage, hasNext, hasPrev } = usePagination({
+    totalItems: filteredTransactions.length,
+    pageSize: 8,
+  });
+
+  useEffect(() => {
+    resetPage();
+  }, [filters, resetPage]);
+
+  const paginatedTransactions = filteredTransactions.slice(paginatedRange.start, paginatedRange.end);
 
   const handleCreate = () => {
     setEditingTransaction(null);
@@ -53,8 +66,10 @@ export function TransactionsPage() {
     setModalOpen(true);
   };
 
-  const handleDelete = (id: string) => {
-    deleteTransaction(id);
+  const confirmDelete = () => {
+    if (!deleteId) return;
+    deleteTransaction(deleteId);
+    setDeleteId(null);
     toast({
       title: "Transação removida",
       description: "A transação foi excluída com sucesso.",
@@ -102,28 +117,33 @@ export function TransactionsPage() {
           <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
           <Input
             placeholder="Buscar transação..."
-            value={search}
-            onChange={(event) => setSearch(event.target.value)}
+            value={filters.search}
+            onChange={(event) => setFilters({ ...filters, search: event.target.value })}
             className="pl-9"
+            aria-label="Buscar transação por descrição"
           />
         </div>
 
-        <Select value={typeFilter} onValueChange={setTypeFilter}>
-          <SelectTrigger className="w-full sm:w-44">
-            <SelectValue placeholder="Todos os tipos" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Todos os tipos</SelectItem>
-            {(Object.keys(typeLabels) as TransactionType[]).map((type) => (
-              <SelectItem key={type} value={type}>
-                {typeLabels[type]}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => setShowFilters((current) => !current)}
+          aria-expanded={showFilters}
+        >
+          Filtros{activeFilterCount > 0 ? ` (${activeFilterCount})` : ""}
+        </Button>
 
         <ExportPdfButton transactions={filteredTransactions} fileName="despesas" />
       </div>
+
+      {showFilters ? (
+        <TransactionFiltersPanel
+          filters={filters}
+          onChange={setFilters}
+          onClear={clearFilters}
+          activeFilterCount={activeFilterCount}
+        />
+      ) : null}
 
       <div className="animate-fade-in overflow-hidden rounded-xl border border-border bg-card shadow-sm">
         <div className="hidden gap-4 border-b border-border px-5 py-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground sm:grid sm:grid-cols-[1fr_120px_100px_120px_96px]">
@@ -135,7 +155,7 @@ export function TransactionsPage() {
         </div>
 
         <div className="divide-y divide-border">
-          {filteredTransactions.map((transaction) => (
+          {paginatedTransactions.map((transaction) => (
             <div
               key={transaction.id}
               className="flex flex-col gap-2 px-5 py-3.5 sm:grid sm:grid-cols-[1fr_120px_100px_120px_96px] sm:items-center sm:gap-4"
@@ -150,7 +170,14 @@ export function TransactionsPage() {
                 </div>
                 <div>
                   <p className="text-sm font-medium text-card-foreground">{transaction.description}</p>
-                  <p className="text-xs text-muted-foreground sm:hidden">{typeLabels[transaction.type]}</p>
+                  <div className="flex items-center gap-2">
+                    <p className="text-xs text-muted-foreground sm:hidden">{typeLabels[transaction.type]}</p>
+                    {transaction.receipt ? (
+                      <span className="flex items-center gap-1 text-xs text-primary" title="Comprovante anexado">
+                        <FileText size={12} /> Anexo
+                      </span>
+                    ) : null}
+                  </div>
                 </div>
               </div>
 
@@ -182,7 +209,7 @@ export function TransactionsPage() {
                 </button>
                 <button
                   type="button"
-                  onClick={() => handleDelete(transaction.id)}
+                  onClick={() => setDeleteId(transaction.id)}
                   className="cursor-pointer rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
                   aria-label={`Excluir ${transaction.description}`}
                 >
@@ -198,12 +225,39 @@ export function TransactionsPage() {
         </div>
       </div>
 
+      <TransactionPagination
+        page={page}
+        totalPages={totalPages}
+        totalItems={filteredTransactions.length}
+        pageSize={pageSize}
+        onPageChange={goToPage}
+        hasNext={hasNext}
+        hasPrev={hasPrev}
+      />
+
       <TransactionModal
         open={modalOpen}
         onClose={closeModal}
         onSave={handleSave}
         transaction={editingTransaction}
       />
+
+      <AlertDialog open={Boolean(deleteId)} onOpenChange={(open) => !open && setDeleteId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Excluir transação?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta ação não pode ser desfeita. A transação será removida permanentemente.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Excluir
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

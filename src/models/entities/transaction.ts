@@ -18,6 +18,7 @@ export interface Transaction {
   amount: number;
   date: string;
   category: TransactionCategory;
+  receipt?: string;
 }
 
 export const initialTransactions: Transaction[] = [

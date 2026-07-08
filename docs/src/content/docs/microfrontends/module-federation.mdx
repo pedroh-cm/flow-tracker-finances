@@ -1,0 +1,74 @@
+---
+title: Module Federation
+description: Como o Module Federation está configurado no FlowTrack
+---
+
+## O que é Module Federation?
+
+**Module Federation** permite que aplicações independentes compartilhem e carreguem módulos em **runtime**, sem rebuild do host.
+
+No FlowTrack usamos **Module Federation 2.0**:
+
+- **`@module-federation/vite`** — plugin nos remotes (Vite)
+- **`@module-federation/runtime`** — carregamento no shell (Next.js)
+
+## Configuração central
+
+Toda a configuração está em `packages/mf-config/src/index.ts`:
+
+```typescript
+export const REMOTES = {
+  auth: {
+    mfName: "mfe_auth",
+    exposePath: "./AuthModule",
+    port: 3001,
+    envKey: "NEXT_PUBLIC_MFE_AUTH_URL",
+    defaultUrl: "http://localhost:3001",
+  },
+  // dashboard, transactions, investments...
+};
+```
+
+## Remotes (Vite)
+
+Cada remote usa `createRemoteViteConfig` com:
+
+```typescript
+federation({
+  name: "mfe_dashboard",
+  filename: "remoteEntry.js",
+  exposes: { "./DashboardModule": "./src/App.tsx" },
+  shared: {
+    react: { singleton: true },
+    "react-dom": { singleton: true },
+    zustand: { singleton: true },
+  },
+})
+```
+
+## Shell (Host)
+
+O runtime é inicializado em `src/microfrontends/shell/federation-runtime.ts`:
+
+```typescript
+init({ name: "shell", remotes: getFederationRemotes() });
+const Component = await loadRemote("mfe_dashboard/DashboardModule");
+```
+
+## Variáveis de ambiente
+
+| Variável | Padrão |
+|----------|--------|
+| `NEXT_PUBLIC_MFE_AUTH_URL` | `http://localhost:3001` |
+| `NEXT_PUBLIC_MFE_DASHBOARD_URL` | `http://localhost:3002` |
+| `NEXT_PUBLIC_MFE_TRANSACTIONS_URL` | `http://localhost:3003` |
+| `NEXT_PUBLIC_MFE_INVESTMENTS_URL` | `http://localhost:3004` |
+| `NEXT_PUBLIC_MFE_MODE=local` | Desativa federation |
+
+## Fluxo de carregamento
+
+1. Usuário acessa `/dashboard` no shell
+2. `MfeLoader` resolve o manifest `dashboard`
+3. Runtime busca `remoteEntry.js` do remote
+4. Carrega `mfe_dashboard/DashboardModule`
+5. Renderiza no layout autenticado

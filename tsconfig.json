@@ -19,7 +19,11 @@
       }
     ],
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./*"],
+      "@flowtrack/shared": ["./packages/shared/src"],
+      "@flowtrack/shared/*": ["./packages/shared/src/*"],
+      "@flowtrack/mf-config": ["./packages/mf-config/src"],
+      "@flowtrack/mf-config/*": ["./packages/mf-config/src/*"]
     }
   },
   "include": [
@@ -31,5 +35,5 @@
     ".next/dev/types/**/*.ts",
     "**/*.mts"
   ],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "docs", "remotes/**/dist"]
 }

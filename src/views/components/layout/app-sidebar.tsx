@@ -38,9 +38,10 @@ export function AppSidebar({ open, onClose }: AppSidebarProps) {
   const { theme, toggleTheme } = useThemeStore();
   const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await logout();
     router.push("/");
+    router.refresh();
   };
 
   return (
@@ -73,7 +74,7 @@ export function AppSidebar({ open, onClose }: AppSidebarProps) {
 
         <div className="mx-4 h-px bg-border/60" />
 
-        <nav className="flex-1 space-y-1 px-3 py-5">
+        <nav className="flex-1 space-y-1 px-3 py-5" aria-label="Navegação principal">
           {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
             const active = pathname === href;
             return (
@@ -99,7 +100,7 @@ export function AppSidebar({ open, onClose }: AppSidebarProps) {
           <button
             onClick={toggleTheme}
             className="cursor-pointer flex w-full items-center gap-3 rounded-xl px-3 py-2 text-sm text-sidebar-foreground hover:bg-sidebar-accent/50 transition-all duration-200"
-            title={theme === "dark" ? "Modo Claro" : "Modo Escuro"}
+            aria-label={theme === "dark" ? "Alternar para modo claro" : "Alternar para modo escuro"}
           >
             {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
             {theme === "dark" ? "Modo Claro" : "Modo Escuro"}

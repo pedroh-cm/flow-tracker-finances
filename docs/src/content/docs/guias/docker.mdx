@@ -1,0 +1,47 @@
+---
+title: Docker
+description: Containerização com Docker Compose
+---
+
+## Serviços
+
+O `docker-compose.yml` orquestra:
+
+| Serviço | Porta | Descrição |
+|---------|-------|-----------|
+| `shell` | 3000 | Next.js host |
+| `mfe-auth` | 3001 | Remote auth |
+| `mfe-dashboard` | 3002 | Remote dashboard |
+| `mfe-transactions` | 3003 | Remote transações |
+| `mfe-investments` | 3004 | Remote investimentos |
+| `docs` | 4321 | Documentação Astro |
+
+## Subir tudo
+
+```bash
+docker compose up --build
+```
+
+## Apenas o shell
+
+```bash
+docker build -t flowtrack-shell .
+docker run -p 3000:3000 flowtrack-shell
+```
+
+## Dockerfile dos remotes
+
+`remotes/Dockerfile` é parametrizado:
+
+```bash
+docker build \
+  --build-arg REMOTE_PACKAGE=@flowtrack/mfe-dashboard \
+  --build-arg REMOTE_PORT=3002 \
+  -f remotes/Dockerfile .
+```
+
+## Variáveis
+
+```bash
+AUTH_SECRET=flowtrack-docker-secret
+```

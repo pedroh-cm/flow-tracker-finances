@@ -1,0 +1,45 @@
+---
+title: Event Bus
+description: Comunicação desacoplada entre microfrontends
+---
+
+## Por que Event Bus?
+
+Em arquitetura de microfrontends, os módulos não devem importar uns aos outros diretamente. O **Event Bus** permite comunicação pub/sub desacoplada.
+
+Implementação: `packages/shared/src/event-bus.ts`
+
+## Eventos disponíveis
+
+| Evento | Payload | Emitido por |
+|--------|---------|-------------|
+| `auth:login` | `AuthUser` | Auth Store |
+| `auth:logout` | — | Auth Store |
+| `transaction:created` | `Transaction` | Transaction Store |
+| `transaction:updated` | `Transaction` | Transaction Store |
+| `transaction:deleted` | `{ id }` | Transaction Store |
+| `theme:changed` | `ThemeMode` | Theme Store |
+| `shell:navigate` | `{ path }` | Shell |
+
+## Uso
+
+```typescript
+import { mfeEventBus, MFE_EVENTS } from "@flowtrack/shared/event-bus";
+
+// Escutar
+const unsubscribe = mfeEventBus.on(MFE_EVENTS.TRANSACTION_CREATED, (tx) => {
+  console.log("Nova transação:", tx);
+});
+
+// Emitir
+mfeEventBus.emit(MFE_EVENTS.AUTH_LOGIN, user);
+
+// Remover listener
+unsubscribe();
+```
+
+## Casos de uso
+
+- Dashboard atualizar ao criar transação no MFE de transações
+- Shell redirecionar após logout no MFE auth
+- Sincronizar tema entre módulos

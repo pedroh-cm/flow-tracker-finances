@@ -1,0 +1,72 @@
+---
+title: Shell e Remotes
+description: Detalhes do host Next.js e dos microfrontends remotos
+---
+
+## Shell (Host)
+
+Localização: raiz do projeto (`src/`)
+
+| Responsabilidade | Arquivo |
+|------------------|---------|
+| Carregador MF | `src/microfrontends/shell/mfe-loader.tsx` |
+| Runtime Federation | `src/microfrontends/shell/federation-runtime.ts` |
+| Proxy JWT | `src/proxy.ts` |
+| API Auth | `src/app/api/auth/` |
+| Layout autenticado | `src/app/(authenticated)/layout.tsx` |
+
+### Rotas do shell (não federadas)
+
+- `/` — Landing page
+- `/settings` — Configurações do usuário
+
+### Rotas federadas
+
+Cada rota renderiza um wrapper MFE:
+
+```tsx
+// src/app/(authenticated)/dashboard/dashboard-mfe.tsx
+<MfeLoader manifest={DASHBOARD_MFE} />
+```
+
+## Remotes
+
+| Pacote | Diretório | Expõe |
+|--------|-----------|-------|
+| `@flowtrack/mfe-auth` | `remotes/mfe-auth/` | `mfe_auth/AuthModule` |
+| `@flowtrack/mfe-dashboard` | `remotes/mfe-dashboard/` | `mfe_dashboard/DashboardModule` |
+| `@flowtrack/mfe-transactions` | `remotes/mfe-transactions/` | `mfe_transactions/TransactionsModule` |
+| `@flowtrack/mfe-investments` | `remotes/mfe-investments/` | `mfe_investments/InvestmentsModule` |
+
+### Estrutura de um remote
+
+```
+remotes/mfe-dashboard/
+├── package.json
+├── vite.config.ts
+├── index.html          # Dev standalone
+└── src/
+    ├── App.tsx         # Módulo exposto
+    └── main.tsx        # Bootstrap dev
+```
+
+### Desenvolvimento standalone
+
+Cada remote pode rodar isoladamente:
+
+```bash
+yarn workspace @flowtrack/mfe-dashboard dev
+# Acesse http://localhost:3002
+```
+
+## Packages compartilhados
+
+### `@flowtrack/shared`
+
+- `registry.ts` — Manifestos dos MFEs
+- `event-bus.ts` — Comunicação entre módulos
+
+### `@flowtrack/mf-config`
+
+- `index.ts` — Definição de remotes, URLs, portas
+- `vite-remote-config.ts` — Factory de config Vite

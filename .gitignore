@@ -19,6 +19,8 @@
 
 # production
 /build
+remotes/*/dist
+docs/dist
 
 # misc
 .DS_Store

@@ -14,6 +14,7 @@ describe("TransactionsPage", () => {
     expect(screen.getByRole("heading", { name: /transações/i })).toBeInTheDocument();
     expect(screen.getByPlaceholderText(/buscar transação/i)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /nova transação/i })).toBeInTheDocument();
-    expect(screen.getByText(/salário mensal/i)).toBeInTheDocument();
+    expect(screen.getByText(/12 transações encontradas/i)).toBeInTheDocument();
+    expect(screen.getByText(/cashback cartão/i)).toBeInTheDocument();
   });
 });

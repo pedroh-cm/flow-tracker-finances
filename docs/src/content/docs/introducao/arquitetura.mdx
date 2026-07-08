@@ -1,0 +1,66 @@
+---
+title: Arquitetura
+description: Visão arquitetural do FlowTrack com shell, remotes e comunicação entre módulos
+---
+
+## Diagrama de alto nível
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    SHELL (Next.js :3000)                    │
+│  ┌─────────────┐  ┌──────────────┐  ┌──────────────────┐  │
+│  │ Middleware  │  │ MfeLoader    │  │ API Auth (/api)  │  │
+│  │ (JWT guard) │  │ (MF Runtime) │  │ login/logout/me  │  │
+│  └─────────────┘  └──────────────┘  └──────────────────┘  │
+└───────────────────────────┬─────────────────────────────────┘
+                            │ Module Federation (runtime)
+        ┌───────────────────┼───────────────────┐
+        ▼                   ▼                   ▼
+  ┌───────────┐      ┌────────────┐      ┌─────────────┐
+  │ mfe_auth  │      │ mfe_dash   │      │ mfe_trans   │ ...
+  │  :3001    │      │  :3002     │      │  :3003      │
+  └───────────┘      └────────────┘      └─────────────┘
+```
+
+## Camadas
+
+### 1. Shell (Host)
+
+O shell é a aplicação Next.js principal. Responsabilidades:
+
+- Roteamento e layouts globais
+- Middleware de autenticação (JWT)
+- API Routes de auth (`/api/auth/*`)
+- Carregamento dos remotes via `MfeLoader`
+- Landing page e Settings (ainda monolíticos)
+
+### 2. Remotes (Microfrontends)
+
+Cada remote é uma aplicação Vite independente que:
+
+- Expõe um módulo via `remoteEntry.js`
+- Pode ser desenvolvida e deployada separadamente
+- Compartilha `react`, `react-dom` e `zustand` como singletons
+
+### 3. Packages compartilhados
+
+- **`@flowtrack/shared`**: Event bus, registry de MFEs, tipos
+- **`@flowtrack/mf-config`**: Portas, URLs, config Vite de federation
+
+### 4. Comunicação
+
+Os módulos se comunicam via **Event Bus** (`mfeEventBus`):
+
+- `auth:login` / `auth:logout`
+- `transaction:created` / `updated` / `deleted`
+- `theme:changed`
+- `shell:navigate`
+
+## Modos de execução
+
+| Modo | Variável | Comportamento |
+|------|----------|---------------|
+| **Federation** (padrão) | — | Shell carrega remotes via `remoteEntry.js` |
+| **Local** | `NEXT_PUBLIC_MFE_MODE=local` | Dynamic imports locais (sem remotes) |
+
+Use o modo local quando quiser rodar apenas o shell: `yarn dev:local`

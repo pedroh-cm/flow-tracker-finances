@@ -9,8 +9,8 @@ export class LoginUseCase {
       throw new Error("Preencha todos os campos");
     }
 
-    if (password.length < 4) {
-      throw new Error("Senha deve ter pelo menos 4 caracteres");
+    if (password.length < 6) {
+      throw new Error("Senha deve ter pelo menos 6 caracteres");
     }
 
     return this.authRepository.login(email, password);

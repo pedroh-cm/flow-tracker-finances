@@ -1,0 +1,31 @@
+---
+title: Transações
+description: MFE de transações com filtros, paginação e anexos
+---
+
+## Remote
+
+- **Pacote**: `@flowtrack/mfe-transactions`
+- **Porta**: 3003
+- **Rota**: `/transactions`
+- **MF ID**: `mfe_transactions/TransactionsModule`
+
+## Funcionalidades
+
+### Listagem
+
+- Busca por descrição
+- Filtros avançados: tipo, categoria, data, valor
+- Paginação (8 itens por página)
+- Exportação PDF
+- Confirmação antes de excluir
+
+### CRUD
+
+- Validação **Zod + React Hook Form**
+- Sugestão automática de categoria por palavras-chave
+- Upload de comprovantes (JPG, PNG, WEBP, PDF — máx. 5MB)
+
+### Persistência
+
+Transações salvas em `localStorage` via Zustand (`flowtrack-transactions`).

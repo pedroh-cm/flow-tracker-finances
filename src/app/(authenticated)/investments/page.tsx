@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { InvestmentsPage } from "@/src/views/pages/investments/investments-page";
+import { InvestmentsMfePage } from "./investments-mfe";
 
 export const metadata: Metadata = {
   title: "Investimentos",
@@ -12,5 +12,5 @@ export const metadata: Metadata = {
 };
 
 export default function InvestmentsRoutePage() {
-  return <InvestmentsPage />;
+  return <InvestmentsMfePage />;
 }
