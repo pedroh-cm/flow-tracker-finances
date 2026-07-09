@@ -1,17 +1,17 @@
 
 export default new Map([
-["src/content/docs/funcionalidades/autenticacao.mdx", () => import("astro:content-layer-deferred-module?astro%3Acontent-layer-deferred-module=&fileName=src%2Fcontent%2Fdocs%2Ffuncionalidades%2Fautenticacao.mdx&astroContentModuleFlag=true")],
 ["src/content/docs/index.mdx", () => import("astro:content-layer-deferred-module?astro%3Acontent-layer-deferred-module=&fileName=src%2Fcontent%2Fdocs%2Findex.mdx&astroContentModuleFlag=true")],
-["src/content/docs/guias/comecando.mdx", () => import("astro:content-layer-deferred-module?astro%3Acontent-layer-deferred-module=&fileName=src%2Fcontent%2Fdocs%2Fguias%2Fcomecando.mdx&astroContentModuleFlag=true")],
+["src/content/docs/guias/deploy.mdx", () => import("astro:content-layer-deferred-module?astro%3Acontent-layer-deferred-module=&fileName=src%2Fcontent%2Fdocs%2Fguias%2Fdeploy.mdx&astroContentModuleFlag=true")],
 ["src/content/docs/guias/desenvolvimento.mdx", () => import("astro:content-layer-deferred-module?astro%3Acontent-layer-deferred-module=&fileName=src%2Fcontent%2Fdocs%2Fguias%2Fdesenvolvimento.mdx&astroContentModuleFlag=true")],
+["src/content/docs/guias/comecando.mdx", () => import("astro:content-layer-deferred-module?astro%3Acontent-layer-deferred-module=&fileName=src%2Fcontent%2Fdocs%2Fguias%2Fcomecando.mdx&astroContentModuleFlag=true")],
+["src/content/docs/funcionalidades/autenticacao.mdx", () => import("astro:content-layer-deferred-module?astro%3Acontent-layer-deferred-module=&fileName=src%2Fcontent%2Fdocs%2Ffuncionalidades%2Fautenticacao.mdx&astroContentModuleFlag=true")],
+["src/content/docs/guias/docker.mdx", () => import("astro:content-layer-deferred-module?astro%3Acontent-layer-deferred-module=&fileName=src%2Fcontent%2Fdocs%2Fguias%2Fdocker.mdx&astroContentModuleFlag=true")],
 ["src/content/docs/funcionalidades/transacoes.mdx", () => import("astro:content-layer-deferred-module?astro%3Acontent-layer-deferred-module=&fileName=src%2Fcontent%2Fdocs%2Ffuncionalidades%2Ftransacoes.mdx&astroContentModuleFlag=true")],
 ["src/content/docs/funcionalidades/investimentos.mdx", () => import("astro:content-layer-deferred-module?astro%3Acontent-layer-deferred-module=&fileName=src%2Fcontent%2Fdocs%2Ffuncionalidades%2Finvestimentos.mdx&astroContentModuleFlag=true")],
-["src/content/docs/guias/deploy.mdx", () => import("astro:content-layer-deferred-module?astro%3Acontent-layer-deferred-module=&fileName=src%2Fcontent%2Fdocs%2Fguias%2Fdeploy.mdx&astroContentModuleFlag=true")],
-["src/content/docs/guias/docker.mdx", () => import("astro:content-layer-deferred-module?astro%3Acontent-layer-deferred-module=&fileName=src%2Fcontent%2Fdocs%2Fguias%2Fdocker.mdx&astroContentModuleFlag=true")],
-["src/content/docs/funcionalidades/dashboard.mdx", () => import("astro:content-layer-deferred-module?astro%3Acontent-layer-deferred-module=&fileName=src%2Fcontent%2Fdocs%2Ffuncionalidades%2Fdashboard.mdx&astroContentModuleFlag=true")],
 ["src/content/docs/introducao/arquitetura.mdx", () => import("astro:content-layer-deferred-module?astro%3Acontent-layer-deferred-module=&fileName=src%2Fcontent%2Fdocs%2Fintroducao%2Farquitetura.mdx&astroContentModuleFlag=true")],
-["src/content/docs/introducao/visao-geral.mdx", () => import("astro:content-layer-deferred-module?astro%3Acontent-layer-deferred-module=&fileName=src%2Fcontent%2Fdocs%2Fintroducao%2Fvisao-geral.mdx&astroContentModuleFlag=true")],
-["src/content/docs/microfrontends/module-federation.mdx", () => import("astro:content-layer-deferred-module?astro%3Acontent-layer-deferred-module=&fileName=src%2Fcontent%2Fdocs%2Fmicrofrontends%2Fmodule-federation.mdx&astroContentModuleFlag=true")],
+["src/content/docs/funcionalidades/dashboard.mdx", () => import("astro:content-layer-deferred-module?astro%3Acontent-layer-deferred-module=&fileName=src%2Fcontent%2Fdocs%2Ffuncionalidades%2Fdashboard.mdx&astroContentModuleFlag=true")],
 ["src/content/docs/microfrontends/shell-e-remotes.mdx", () => import("astro:content-layer-deferred-module?astro%3Acontent-layer-deferred-module=&fileName=src%2Fcontent%2Fdocs%2Fmicrofrontends%2Fshell-e-remotes.mdx&astroContentModuleFlag=true")],
-["src/content/docs/microfrontends/event-bus.mdx", () => import("astro:content-layer-deferred-module?astro%3Acontent-layer-deferred-module=&fileName=src%2Fcontent%2Fdocs%2Fmicrofrontends%2Fevent-bus.mdx&astroContentModuleFlag=true")]]);
+["src/content/docs/microfrontends/event-bus.mdx", () => import("astro:content-layer-deferred-module?astro%3Acontent-layer-deferred-module=&fileName=src%2Fcontent%2Fdocs%2Fmicrofrontends%2Fevent-bus.mdx&astroContentModuleFlag=true")],
+["src/content/docs/introducao/visao-geral.mdx", () => import("astro:content-layer-deferred-module?astro%3Acontent-layer-deferred-module=&fileName=src%2Fcontent%2Fdocs%2Fintroducao%2Fvisao-geral.mdx&astroContentModuleFlag=true")],
+["src/content/docs/microfrontends/module-federation.mdx", () => import("astro:content-layer-deferred-module?astro%3Acontent-layer-deferred-module=&fileName=src%2Fcontent%2Fdocs%2Fmicrofrontends%2Fmodule-federation.mdx&astroContentModuleFlag=true")]]);
 		
