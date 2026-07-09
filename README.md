@@ -13,7 +13,20 @@
   <img alt="Astro" src="https://img.shields.io/badge/Docs-Astro-BC52EE?style=flat-square&logo=astro" />
 </p>
 
+<p align="center">
+  <a href="https://flow-track-finances.vercel.app"><strong>🚀 Aplicação em produção</strong></a>
+  &nbsp;·&nbsp;
+  <a href="https://docs-nine-ochre.vercel.app"><strong>📚 Documentação</strong></a>
+</p>
+
 ---
+
+## Links em produção
+
+| Recurso | URL |
+|---------|-----|
+| **Aplicação** | https://flow-track-finances.vercel.app |
+| **Documentação** | https://docs-nine-ochre.vercel.app |
 
 ## Arquitetura Module Federation
 
@@ -34,7 +47,7 @@ Site completo em **Astro Starlight**:
 
 | Ambiente | URL |
 |----------|-----|
-| Produção | https://docs-nine-ochre.vercel.app |
+| Produção | [docs-nine-ochre.vercel.app](https://docs-nine-ochre.vercel.app) |
 | Local | http://localhost:4321 |
 
 ```bash
@@ -116,15 +129,13 @@ Ou em **Vercel → Project → Settings → Environment Variables**.
 
 | URL produção | Descrição |
 |--------------|-----------|
-| https://flow-track-finances.vercel.app | Shell (app principal) |
+| [flow-track-finances.vercel.app](https://flow-track-finances.vercel.app) | Shell (app principal) |
 | `/mfe-auth/remoteEntry.js` | Remote de autenticação |
 | `/mfe-dashboard/remoteEntry.js` | Remote do dashboard |
 | `/mfe-transactions/remoteEntry.js` | Remote de transações |
 | `/mfe-investments/remoteEntry.js` | Remote de investimentos |
 
-> Após o deploy, atualize a URL acima se o domínio do projeto for diferente.
-
-**Documentação:** https://docs-nine-ochre.vercel.app
+**Documentação:** [docs-nine-ochre.vercel.app](https://docs-nine-ochre.vercel.app)
 
 ## Credenciais demo
 
@@ -183,7 +194,7 @@ yarn deploy:docs
 
 | URL | Descrição |
 |-----|-----------|
-| https://docs-nine-ochre.vercel.app | Documentação em produção |
+| [docs-nine-ochre.vercel.app](https://docs-nine-ochre.vercel.app) | Documentação em produção |
 
 Ou importe o repositório na Vercel com **Root Directory:** `docs`.
 
