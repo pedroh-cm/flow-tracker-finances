@@ -2,7 +2,7 @@ import starlight from "@astrojs/starlight";
 import { defineConfig } from "astro/config";
 
 export default defineConfig({
-  site: "https://flowtrack-docs.vercel.app",
+  site: "https://docs-nine-ochre.vercel.app",
   integrations: [
     starlight({
       title: "FlowTrack Finances",

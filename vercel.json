@@ -1,10 +1,18 @@
 {
   "framework": "nextjs",
   "buildCommand": "yarn build",
-  "devCommand": "yarn dev",
+  "devCommand": "yarn dev:federation",
   "installCommand": "yarn install",
   "regions": ["gru1"],
   "headers": [
+    {
+      "source": "/mfe-(.*)",
+      "headers": [
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
+        { "key": "Access-Control-Allow-Methods", "value": "GET, OPTIONS" },
+        { "key": "Cache-Control", "value": "public, max-age=3600" }
+      ]
+    },
     {
       "source": "/(.*)",
       "headers": [

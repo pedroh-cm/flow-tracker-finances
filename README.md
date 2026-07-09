@@ -32,9 +32,15 @@ Cada MFE é um **remote Vite** independente, buildado e deployável separadament
 
 Site completo em **Astro Starlight**:
 
+| Ambiente | URL |
+|----------|-----|
+| Produção | https://docs-nine-ochre.vercel.app |
+| Local | http://localhost:4321 |
+
 ```bash
-yarn dev:docs    # http://localhost:4321
-yarn build:docs  # gera docs/dist/
+yarn dev:docs       # desenvolvimento
+yarn build:docs     # gera docs/dist/
+yarn deploy:docs    # publica na Vercel
 ```
 
 ## Começando
@@ -87,6 +93,39 @@ flow-track-finances/
 | `yarn build:remotes` | Build apenas remotes |
 | `yarn test` | Testes Jest |
 
+## Deploy (Vercel)
+
+Deploy unificado: shell + 4 remotes no **mesmo domínio**.
+
+```bash
+npx vercel login          # primeira vez
+./scripts/deploy-vercel.sh
+```
+
+**Variável obrigatória na Vercel:** `AUTH_SECRET` (gere com `openssl rand -base64 32`)
+
+Sem `AUTH_SECRET`, o endpoint `/api/auth/login` retorna **500** em produção.
+
+```bash
+# Adicionar via CLI (após vercel login)
+printf '%s' 'SEU_SECRET_AQUI' | npx vercel env add AUTH_SECRET production
+npx vercel deploy --prod
+```
+
+Ou em **Vercel → Project → Settings → Environment Variables**.
+
+| URL produção | Descrição |
+|--------------|-----------|
+| https://flow-track-finances.vercel.app | Shell (app principal) |
+| `/mfe-auth/remoteEntry.js` | Remote de autenticação |
+| `/mfe-dashboard/remoteEntry.js` | Remote do dashboard |
+| `/mfe-transactions/remoteEntry.js` | Remote de transações |
+| `/mfe-investments/remoteEntry.js` | Remote de investimentos |
+
+> Após o deploy, atualize a URL acima se o domínio do projeto for diferente.
+
+**Documentação:** https://docs-nine-ochre.vercel.app
+
 ## Credenciais demo
 
 | E-mail | Senha |
@@ -99,6 +138,58 @@ flow-track-finances/
 ```bash
 docker compose up --build
 ```
+
+Acesse via `http://localhost:3000`. As URLs dos remotes usam `localhost` porque o Module Federation carrega os módulos no **browser** do usuário (portas expostas no host).
+
+## Requisitos Tech Challenge Fase 02
+
+| Requisito | Status | Onde ver |
+|-----------|--------|----------|
+| Gráficos e análises financeiras | ✅ | `/dashboard` |
+| Personalização do dashboard (Plus) | ✅ | Botão "Personalizar" no dashboard |
+| Filtros avançados e busca | ✅ | `/transactions` |
+| Paginação de transações | ✅ | `/transactions` (rodapé da lista) |
+| Validação avançada + sugestões de categoria | ✅ | Modal "Nova Transação" |
+| Upload de anexos/recibos | ✅ | Modal "Nova Transação" |
+| Docker + Docker Compose | ✅ | `docker-compose.yml` |
+| Deploy cloud (Vercel) | ✅ | `vercel.json` + [guia de deploy](docs/src/content/docs/guias/deploy.mdx) |
+| Autenticação e autorização | ✅ | `/login`, `src/lib/auth/` |
+| Microfrontends (Module Federation) | ✅ | `remotes/`, `packages/mf-config/` |
+| Gestão de estado complexa | ✅ | Zustand (`src/viewmodels/stores/`) |
+| TypeScript | ✅ | Todo o monorepo |
+| SSR/SSG | ✅ | Landing page (`src/app/page.tsx` — SSG) |
+| Comunicação entre MFEs | ✅ | Event Bus (`packages/shared/src/event-bus.ts`) |
+| Acessibilidade | ✅ | Skip link, ARIA, testes `jest-axe` |
+
+### Gestão de estado
+
+O projeto utiliza **Zustand** com middleware de persistência (`localStorage`) para stores de transações, dashboard, autenticação e tema. Atende o requisito de gestão de estado complexa com tipagem TypeScript e atualizações reativas entre componentes.
+
+### Comunicação entre microfrontends
+
+O **Event Bus** (`mfeEventBus`) permite pub/sub entre MFEs:
+
+- `transaction-store` emite eventos ao criar/editar/excluir transações
+- `dashboard-page` escuta e sincroniza em tempo real
+- `theme-store` emite `theme:changed` ao alternar tema
+
+### Deploy da documentação (Astro)
+
+Projeto Vercel separado na pasta `docs/`:
+
+```bash
+yarn deploy:docs
+```
+
+| URL | Descrição |
+|-----|-----------|
+| https://docs-nine-ochre.vercel.app | Documentação em produção |
+
+Ou importe o repositório na Vercel com **Root Directory:** `docs`.
+
+> Adicione aqui o link do vídeo após gravar a demonstração.
+
+Roteiro sugerido: integração Module Federation → dashboard com gráficos → transações com filtros → Docker → deploy Vercel.
 
 ## Variáveis de ambiente
 

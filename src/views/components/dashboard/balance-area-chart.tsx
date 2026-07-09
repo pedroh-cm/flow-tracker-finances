@@ -11,6 +11,8 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
+import { ChartDataTable } from "@/src/views/components/dashboard/chart-data-table";
+
 const formatCurrency = (v: number) =>
   v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
@@ -28,6 +30,8 @@ export function BalanceAreaChart({ data }: BalanceAreaChartProps) {
     <div
       className="animate-fade-in rounded-2xl border border-border bg-card p-5 shadow-sm"
       style={{ animationDelay: "0.25s" }}
+      role="img"
+      aria-label="Gráfico de evolução do saldo ao longo do tempo"
     >
       <div className="mb-4 flex items-center justify-between">
         <h2 className="font-display flex items-center gap-2 text-base font-semibold text-foreground">
@@ -74,6 +78,11 @@ export function BalanceAreaChart({ data }: BalanceAreaChartProps) {
           />
         </AreaChart>
       </ResponsiveContainer>
+      <ChartDataTable
+        caption="Dados do gráfico de evolução do saldo"
+        columns={["Data", "Saldo"]}
+        rows={data.map((point) => [point.date, formatCurrency(point.balance)])}
+      />
     </div>
   );
 }

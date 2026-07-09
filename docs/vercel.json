@@ -1,0 +1,7 @@
+{
+  "framework": "astro",
+  "installCommand": "yarn install",
+  "buildCommand": "yarn build",
+  "outputDirectory": "dist",
+  "regions": ["gru1"]
+}

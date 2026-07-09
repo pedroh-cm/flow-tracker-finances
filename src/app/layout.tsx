@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://flow-tracker-finances.vercel.app"),
+  metadataBase: new URL("https://flow-track-finances.vercel.app"),
   title: {
     default: "FlowTrack — Gestão Financeira Inteligente",
     template: "%s | FlowTrack",
@@ -27,7 +27,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "pt_BR",
-    url: "https://flow-tracker-finances.vercel.app",
+    url: "https://flow-track-finances.vercel.app",
     siteName: "FlowTrack",
     title: "FlowTrack — Gestão Financeira Inteligente",
     description:

@@ -30,7 +30,8 @@ export async function POST(request: NextRequest) {
     await setSessionCookie(authUser, rememberMe);
 
     return NextResponse.json({ user: authUser });
-  } catch {
+  } catch (error) {
+    console.error("[auth/login]", error);
     return NextResponse.json({ error: "Erro interno ao autenticar" }, { status: 500 });
   }
 }

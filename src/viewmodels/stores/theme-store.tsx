@@ -4,6 +4,7 @@ import { ReactNode, useEffect } from "react";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
+import { MFE_EVENTS, mfeEventBus } from "@/src/microfrontends/shared/event-bus";
 import { ThemeMode } from "@/src/models/entities/theme-mode";
 
 type ThemeStoreState = {
@@ -40,11 +41,13 @@ const useThemeBaseStore = create<ThemeStoreState>()(
       setTheme: (theme) => {
         applyThemeToDocument(theme);
         set({ theme });
+        mfeEventBus.emit(MFE_EVENTS.THEME_CHANGED, { theme });
       },
       toggleTheme: () => {
         const nextTheme: ThemeMode = get().theme === "dark" ? "light" : "dark";
         applyThemeToDocument(nextTheme);
         set({ theme: nextTheme });
+        mfeEventBus.emit(MFE_EVENTS.THEME_CHANGED, { theme: nextTheme });
       },
       setHasHydrated: (hasHydrated) => {
         set({ hasHydrated });

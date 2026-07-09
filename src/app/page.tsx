@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 
 import { LandingPage } from "@/src/views/pages/landing/landing-page";
 
+export const dynamic = "force-static";
+
 export const metadata: Metadata = {
   title: "FlowTrack — Gestão Financeira Inteligente",
   description:
@@ -10,7 +12,7 @@ export const metadata: Metadata = {
     title: "FlowTrack — Gestão Financeira Inteligente",
     description:
       "Controle suas finanças com inteligência. Gerencie transações, acompanhe investimentos e visualize seu patrimônio em tempo real.",
-    url: "https://flow-tracker-finances.vercel.app",
+    url: "https://flow-track-finances.vercel.app",
   },
 };
 

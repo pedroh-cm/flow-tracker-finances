@@ -1,9 +1,10 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ArrowDownLeft, ArrowUpRight, CreditCard, Plus, Wallet } from "lucide-react";
 
 import { categoryLabels, type Transaction, type TransactionCategory } from "@/src/models/entities/transaction";
+import { MFE_EVENTS, mfeEventBus } from "@/src/microfrontends/shared/event-bus";
 import { useDashboardStore } from "@/src/viewmodels/stores/dashboard-store";
 import { useTransactionStore } from "@/src/viewmodels/stores/transaction-store";
 import { useToast } from "@/src/hooks/use-toast";
@@ -49,6 +50,23 @@ export function DashboardPage() {
   const { toast } = useToast();
   const [modalOpen, setModalOpen] = useState(false);
   const [showBalance, setShowBalance] = useState(true);
+  const [lastEventSync, setLastEventSync] = useState<string | null>(null);
+
+  useEffect(() => {
+    const syncFromEventBus = () => {
+      setLastEventSync(
+        new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", second: "2-digit" }),
+      );
+    };
+
+    const unsubs = [
+      mfeEventBus.on(MFE_EVENTS.TRANSACTION_CREATED, syncFromEventBus),
+      mfeEventBus.on(MFE_EVENTS.TRANSACTION_UPDATED, syncFromEventBus),
+      mfeEventBus.on(MFE_EVENTS.TRANSACTION_DELETED, syncFromEventBus),
+    ];
+
+    return () => unsubs.forEach((unsub) => unsub());
+  }, []);
 
   const handleSave = (data: Omit<Transaction, "id">) => {
     addTransaction(data);
@@ -127,7 +145,14 @@ export function DashboardPage() {
       <div className="animate-fade-in flex items-center justify-between">
         <div>
           <h1 className="font-display text-2xl font-bold text-foreground">Dashboard</h1>
-          <p className="text-sm text-muted-foreground">Visão geral das suas finanças</p>
+          <p className="text-sm text-muted-foreground">
+            Visão geral das suas finanças
+            {lastEventSync ? (
+              <span className="ml-2 text-xs text-primary" aria-live="polite">
+                · Sincronizado via Event Bus às {lastEventSync}
+              </span>
+            ) : null}
+          </p>
         </div>
         <div className="flex items-center gap-2">
           <DashboardCustomizer />

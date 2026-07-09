@@ -2,6 +2,8 @@
 
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 
+import { ChartDataTable } from "@/src/views/components/dashboard/chart-data-table";
+
 const formatCurrency = (v: number) =>
   v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
@@ -31,6 +33,8 @@ export function CategoryPieChart({ data }: CategoryPieChartProps) {
     <div
       className="animate-fade-in rounded-2xl border border-border bg-card p-5 shadow-sm"
       style={{ animationDelay: "0.35s" }}
+      role="img"
+      aria-label="Gráfico de despesas por categoria"
     >
       <h2 className="font-display mb-4 text-base font-semibold text-foreground">
         Despesas por Categoria
@@ -79,6 +83,11 @@ export function CategoryPieChart({ data }: CategoryPieChartProps) {
           ))}
         </div>
       </div>
+      <ChartDataTable
+        caption="Dados do gráfico de despesas por categoria"
+        columns={["Categoria", "Valor"]}
+        rows={data.map((item) => [item.name, formatCurrency(item.value)])}
+      />
     </div>
   );
 }

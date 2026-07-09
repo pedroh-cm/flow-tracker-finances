@@ -10,6 +10,8 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
+import { ChartDataTable } from "@/src/views/components/dashboard/chart-data-table";
+
 const formatCurrency = (v: number) =>
   v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
@@ -28,6 +30,8 @@ export function IncomeExpenseBarChart({ data }: IncomeExpenseBarChartProps) {
     <div
       className="animate-fade-in rounded-2xl border border-border bg-card p-5 shadow-sm"
       style={{ animationDelay: "0.3s" }}
+      role="img"
+      aria-label="Gráfico comparativo de receitas e despesas"
     >
       <h2 className="font-display mb-4 text-base font-semibold text-foreground">
         Receitas vs Despesas
@@ -61,6 +65,15 @@ export function IncomeExpenseBarChart({ data }: IncomeExpenseBarChartProps) {
           <Bar dataKey="expense" fill="hsl(0, 72%, 51%)" radius={[6, 6, 0, 0]} name="Despesa" />
         </BarChart>
       </ResponsiveContainer>
+      <ChartDataTable
+        caption="Dados do gráfico de receitas e despesas"
+        columns={["Data", "Receita", "Despesa"]}
+        rows={data.map((point) => [
+          point.date,
+          formatCurrency(point.income),
+          formatCurrency(point.expense),
+        ])}
+      />
     </div>
   );
 }

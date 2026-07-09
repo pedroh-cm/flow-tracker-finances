@@ -1,3 +1,6 @@
+# URLs dos MFEs usadas pelo browser (Module Federation carrega no cliente).
+# localhost funciona porque as portas são expostas no host via ports:.
+# Para deploy em produção, substitua pelas URLs públicas dos remotes.
 services:
   shell:
     build:
@@ -18,6 +21,8 @@ services:
       - mfe-transactions
       - mfe-investments
     restart: unless-stopped
+    networks:
+      - flowtrack
 
   mfe-auth:
     build:
@@ -29,6 +34,8 @@ services:
     ports:
       - "3001:3001"
     restart: unless-stopped
+    networks:
+      - flowtrack
 
   mfe-dashboard:
     build:
@@ -40,6 +47,8 @@ services:
     ports:
       - "3002:3002"
     restart: unless-stopped
+    networks:
+      - flowtrack
 
   mfe-transactions:
     build:
@@ -51,6 +60,8 @@ services:
     ports:
       - "3003:3003"
     restart: unless-stopped
+    networks:
+      - flowtrack
 
   mfe-investments:
     build:
@@ -62,6 +73,8 @@ services:
     ports:
       - "3004:3004"
     restart: unless-stopped
+    networks:
+      - flowtrack
 
   docs:
     build:
@@ -70,3 +83,9 @@ services:
     ports:
       - "4321:4321"
     restart: unless-stopped
+    networks:
+      - flowtrack
+
+networks:
+  flowtrack:
+    driver: bridge

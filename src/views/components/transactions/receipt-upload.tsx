@@ -3,6 +3,7 @@
 import { useCallback, useRef, useState } from "react";
 import { FileText, Upload, X } from "lucide-react";
 
+import { useToast } from "@/src/hooks/use-toast";
 import { Button } from "@/src/views/components/ui/button";
 import { Label } from "@/src/views/components/ui/form";
 
@@ -17,16 +18,25 @@ const MAX_SIZE = 5 * 1024 * 1024;
 export function ReceiptUpload({ value, onChange }: ReceiptUploadProps) {
   const [fileName, setFileName] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { toast } = useToast();
 
   const handleFile = useCallback(
     (file: File) => {
       if (!ACCEPTED_TYPES.includes(file.type)) {
-        alert("Formato não suportado. Use JPG, PNG, WEBP ou PDF.");
+        toast({
+          title: "Formato não suportado",
+          description: "Use JPG, PNG, WEBP ou PDF.",
+          variant: "destructive",
+        });
         return;
       }
 
       if (file.size > MAX_SIZE) {
-        alert("Arquivo deve ter no máximo 5MB.");
+        toast({
+          title: "Arquivo muito grande",
+          description: "O comprovante deve ter no máximo 5MB.",
+          variant: "destructive",
+        });
         return;
       }
 
@@ -38,7 +48,7 @@ export function ReceiptUpload({ value, onChange }: ReceiptUploadProps) {
       };
       reader.readAsDataURL(file);
     },
-    [onChange],
+    [onChange, toast],
   );
 
   const handleRemove = () => {

@@ -3,30 +3,68 @@ title: Deploy
 description: Deploy do shell e remotes em ambientes cloud
 ---
 
-## Vercel (recomendado)
+## Vercel (recomendado) — deploy unificado
 
-### Shell
+O projeto usa **um único projeto Vercel**: os 4 remotes são buildados e servidos como assets estáticos em subpastas (`/mfe-auth`, `/mfe-dashboard`, etc.) no mesmo domínio do shell.
 
-1. Importe o repositório na Vercel
-2. Framework: **Next.js**
-3. Build: `yarn build:remotes && yarn build:shell`
-4. Configure variáveis:
+### Deploy rápido (CLI)
 
 ```bash
-AUTH_SECRET=...
-NEXT_PUBLIC_MFE_AUTH_URL=https://mfe-auth.seudominio.com
-NEXT_PUBLIC_MFE_DASHBOARD_URL=https://mfe-dashboard.seudominio.com
-NEXT_PUBLIC_MFE_TRANSACTIONS_URL=https://mfe-transactions.seudominio.com
-NEXT_PUBLIC_MFE_INVESTMENTS_URL=https://mfe-investments.seudominio.com
+# 1. Login na Vercel (apenas na primeira vez)
+npx vercel login
+
+# 2. Deploy de produção
+chmod +x scripts/deploy-vercel.sh
+./scripts/deploy-vercel.sh
 ```
 
-### Remotes
+Ou manualmente:
 
-Cada remote pode ser um projeto Vercel separado:
+```bash
+yarn build
+npx vercel deploy --prod
+```
+
+### Variáveis de ambiente na Vercel
+
+| Variável | Obrigatória | Descrição |
+|----------|-------------|-----------|
+| `AUTH_SECRET` | Sim (produção) | Gere com `openssl rand -base64 32` |
+
+As URLs dos microfrontends (`NEXT_PUBLIC_MFE_*`) são **configuradas automaticamente** em `next.config.ts` a partir de `VERCEL_PROJECT_PRODUCTION_URL`. Não é necessário defini-las manualmente.
+
+### Deploy via GitHub Actions
+
+1. Crie um projeto na [Vercel](https://vercel.com) importando o repositório
+2. Em **Settings → General**, copie `ORG_ID` e `PROJECT_ID`
+3. Em **Settings → Environment Variables**, adicione `AUTH_SECRET`
+4. No GitHub, adicione os secrets:
+   - `VERCEL_TOKEN` — token em [vercel.com/account/tokens](https://vercel.com/account/tokens)
+   - `VERCEL_ORG_ID`
+   - `VERCEL_PROJECT_ID`
+   - `AUTH_SECRET`
+5. O workflow `.github/workflows/vercel-deploy.yml` faz deploy automático no push para `main`/`master`
+
+### Verificar Module Federation em produção
+
+Após o deploy, confirme que os remotes estão acessíveis:
+
+```
+https://seu-projeto.vercel.app/mfe-auth/remoteEntry.js
+https://seu-projeto.vercel.app/mfe-dashboard/remoteEntry.js
+https://seu-projeto.vercel.app/mfe-transactions/remoteEntry.js
+https://seu-projeto.vercel.app/mfe-investments/remoteEntry.js
+```
+
+## Deploy alternativo — projetos separados
+
+Cada remote pode ser um projeto Vercel separado (mais complexo):
 
 - Root Directory: `remotes/mfe-dashboard`
 - Build: `cd ../.. && yarn install && yarn workspace @flowtrack/mfe-dashboard build`
 - Output: `dist`
+
+Nesse caso, configure manualmente as variáveis `NEXT_PUBLIC_MFE_*` com as URLs de cada projeto.
 
 ## CI/CD
 
