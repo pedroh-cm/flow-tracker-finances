@@ -16,7 +16,7 @@ type CreateRemoteViteConfigOptions = {
 };
 
 export function createRemoteViteConfig({ remote, appDir }: CreateRemoteViteConfigOptions): UserConfig {
-  const exposeName = remote.exposePath.replace("./", "");
+  const shimsDir = path.resolve(__dirname, "shims");
 
   return defineConfig({
     root: appDir,
@@ -28,6 +28,9 @@ export function createRemoteViteConfig({ remote, appDir }: CreateRemoteViteConfi
         exposes: {
           [remote.exposePath]: "./src/App.tsx",
         },
+        // Only share React. Sharing zustand/@tanstack via @module-federation/vite
+        // rewrites Vite's optimized deps and breaks `import { create } from "zustand"`
+        // in standalone remote (blank page: "create is not a function").
         shared: {
           react: {
             singleton: true,
@@ -37,15 +40,12 @@ export function createRemoteViteConfig({ remote, appDir }: CreateRemoteViteConfi
             singleton: true,
             requiredVersion: "^19.0.0",
           },
-          zustand: {
-            singleton: true,
-          },
-          "@tanstack/react-query": {
-            singleton: true,
-          },
         },
       }),
     ],
+    define: {
+      "process.env.NODE_ENV": JSON.stringify(process.env.NODE_ENV ?? "development"),
+    },
     server: {
       port: remote.port,
       strictPort: true,
@@ -73,6 +73,9 @@ export function createRemoteViteConfig({ remote, appDir }: CreateRemoteViteConfi
       alias: {
         "@": monorepoRoot,
         "@flowtrack/shared": path.resolve(monorepoRoot, "packages/shared/src"),
+        // Shared pages import next/*; remotes run outside the App Router.
+        "next/link": path.resolve(shimsDir, "next-link.tsx"),
+        "next/navigation": path.resolve(shimsDir, "next-navigation.ts"),
       },
     },
     css: {
@@ -80,6 +83,7 @@ export function createRemoteViteConfig({ remote, appDir }: CreateRemoteViteConfi
     },
     optimizeDeps: {
       include: ["react", "react-dom", "zustand"],
+      exclude: ["next"],
     },
   });
 }

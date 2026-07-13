@@ -1,5 +1,14 @@
 @import "tailwindcss";
 
+/* Remotes (Vite) usam root em remotes/mfe-*; sem @source o scan não acha as classes em src/. */
+@source "../views";
+@source "../microfrontends";
+@source "../lib";
+@source "../viewmodels";
+@source "../app";
+@source "../../packages/mf-config/src/shims";
+@source "../../remotes";
+
 :root {
   --background: 220 20% 97%;
   --foreground: 220 30% 8%;
@@ -76,8 +85,9 @@
   --color-sidebar-foreground: hsl(var(--sidebar-foreground));
   --color-sidebar-accent: hsl(var(--sidebar-accent));
   --radius: var(--radius);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* Fallbacks: remotes não carregam next/font (--font-geist-*). */
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
 }
 
 .dark {
